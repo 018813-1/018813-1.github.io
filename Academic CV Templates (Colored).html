@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic CV - Qiping Wang</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Roboto:wght@300;400;500;700&display=swap');
+        
+        body { background-color: #525659; padding: 40px 0; font-family: 'Roboto', sans-serif; }
+        .cv-container { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); margin-bottom: 40px; background: white; }
+        
+        /* Typography */
+        h1, h2, h3 { font-family: 'Merriweather', serif; }
+        
+        /* Custom Accents */
+        .accent-text { color: #0f766e; } /* Teal-700 */
+        .accent-bg { background-color: #f0fdfa; } /* Teal-50 */
+        .section-title { border-bottom: 2px solid #e5e7eb; padding-bottom: 0.5rem; margin-bottom: 1.5rem; color: #1e3a8a; display: flex; align-items: center; }
+        .section-icon { margin-right: 0.75rem; color: #0d9488; font-size: 1.1rem; }
+        
+        /* Print Settings */
+        @media print {
+            body { background: white; padding: 0; }
+            .cv-container { box-shadow: none; margin: 0; width: 100%; max-width: none; padding: 0 20px; }
+            .no-print { display: none; }
+            a { text-decoration: none; color: inherit; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cv-container max-w-[850px] mx-auto bg-white p-12 text-slate-800">
+        
+        <!-- Header with Photo -->
+        <header class="flex justify-between items-start mb-10 border-b border-slate-100 pb-8">
+            <!-- Left: Text Info -->
+            <div class="flex-1 pr-4 pt-2">
+                <h1 class="text-4xl font-black text-slate-900 mb-2 tracking-wide uppercase">Qiping Wang</h1>
+                <p class="text-teal-700 font-medium text-lg mb-4">Ph.D. Candidate in Linguistics</p>
+                
+                <div class="text-sm text-slate-600 space-y-2">
+                    <div class="flex items-center"><i class="fas fa-map-marker-alt text-teal-600 w-6 text-center mr-2"></i>Beijing, China</div>
+                    <div class="flex items-center"><i class="fas fa-envelope text-teal-600 w-6 text-center mr-2"></i>WQP@mail.bnu.edu.cn</div>
+                    <div class="flex items-center"><i class="fas fa-phone text-teal-600 w-6 text-center mr-2"></i>(+86) 188-1313-5698</div>
+                    <!-- ResearchGate Full Link -->
+                    <div class="flex items-start">
+                        <i class="fab fa-researchgate text-teal-600 w-6 text-center mr-2 mt-1"></i>
+                        <a href="https://www.researchgate.net/profile/Qiping-Wang" class="hover:text-teal-700 hover:underline transition-colors break-all text-xs font-mono pt-0.5">https://www.researchgate.net/profile/Qiping-Wang</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Photo -->
+            <div class="w-32 h-40 flex-shrink-0">
+                <img src="https://d41chssnpqdne.cloudfront.net/user_upload_by_module/chat_bot/files/5235341/Yh4mO5r9kUkF1I8J?Expires=1770197244&Signature=TBQoXaOK-mec6Cn2J3D0-d4NzvJ48FGwVlMu8MK0jSTGFnXYiGQeMGPKkHl7sMXNtatLn4BfDvHwNjSzYUGfVB~xn-5PeSNR0DNyAhSXDDEd7x400lk2XUBJCLoJIQ1O0Qvmsuxh7fEF94~GFZM2GYj943LAdHqub1t~IPAz9xTVrTF8N3Tv1trjjL6w1eSnq35Lstj~9zIcb7~2Qcvij6Gy5oknf6zF8z9zH7KQPJ5dymTGAvWOoRNvvKWt0iOYoKhyZVQA0aLIk2reO5VUVvjxVaYHFfD8IVdyGaXw3f96CiskzpTregU~O1yp8D4l0~4yY-FB0a~ZiJFr48swrg__&Key-Pair-Id=K3USGZIKWMDCSX" alt="Qiping Wang" class="w-full h-full rounded-xl object-cover border-4 border-slate-50 shadow-md">
+            </div>
+        </header>
+
+        <!-- Education -->
+        <section class="mb-8">
+            <h2 class="section-title text-xl font-bold uppercase tracking-wider">
+                <i class="fas fa-graduation-cap section-icon"></i> Education
+            </h2>
+            
+            <!-- PhD -->
+            <div class="mb-6 relative">
+                <div class="flex justify-between items-baseline mb-1">
+                    <h3 class="font-bold text-slate-900 text-lg">Beijing Normal University (BNU)</h3>
+                    <span class="text-sm font-bold text-teal-700">Sep. 2022 – Jul. 2026 (Exp.)</span>
+                </div>
+                <div class="text-slate-800 font-medium">Doctor of Arts in Linguistics and Applied Linguistics</div>
+                <div class="text-sm text-slate-600 mt-1"><span class="font-semibold text-slate-500">Supervisor:</span> Prof. Liping Feng</div>
+            </div>
+
+            <!-- Visiting PhD (Highlighted) -->
+            <div class="mb-6 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+                <div class="flex justify-between items-baseline mb-1">
+                    <h3 class="font-bold text-slate-800 text-md">Macquarie University (MQU), Australia</h3>
+                    <span class="text-sm font-bold text-blue-700">Feb. 2025 – Feb. 2026</span>
+                </div>
+                <div class="text-slate-700 italic text-sm">Visiting Student, Department of Linguistics</div>
+                <div class="text-sm text-slate-600 mt-1"><span class="font-semibold text-slate-500">Supervisor:</span> Dr. Xin Wang</div>
+            </div>
+
+            <!-- Master -->
+            <div class="mb-6">
+                <div class="flex justify-between items-baseline mb-1">
+                    <h3 class="font-bold text-slate-900 text-lg">Beijing Normal University (BNU)</h3>
+                    <span class="text-sm font-bold text-teal-700">Sep. 2017 – Jul. 2020</span>
+                </div>
+                <div class="text-slate-800 font-medium">Master of Arts in Linguistics and Applied Linguistics</div>
+                <div class="text-sm text-slate-600 mt-1"><span class="font-semibold text-slate-500">Supervisor:</span> Prof. Shihong Zhou</div>
+            </div>
+
+            <!-- Visiting Master -->
+            <div class="mb-4 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+                <div class="flex justify-between items-baseline mb-1">
+                    <h3 class="font-bold text-slate-800 text-md">The University of Oklahoma (OU), U.S.</h3>
+                    <span class="text-sm font-bold text-blue-700">Jul. 2018 – Oct. 2018</span>
+                </div>
+                <div class="text-slate-700 italic text-sm">Visiting Student</div>
+            </div>
+
+            <!-- Bachelor -->
+            <div>
+                <div class="flex justify-between items-baseline mb-1">
+                    <h3 class="font-bold text-slate-900 text-lg">Shihezi University (SHZU)</h3>
+                    <span class="text-sm font-bold text-teal-700">Sep. 2012 – Jul. 2016</span>
+                </div>
+                <div class="text-slate-800 font-medium">Bachelor of Arts in Chinese Language and Literature</div>
+            </div>
+        </section>
+
+        <!-- Research Interests -->
+        <section class="mb-10">
+            <h2 class="section-title text-xl font-bold uppercase tracking-wider">
+                <i class="fas fa-lightbulb section-icon"></i> Research Interests
+            </h2>
+            <div class="flex flex-wrap gap-3">
+                <span class="bg-teal-50 text-teal-800 px-4 py-2 rounded-full text-sm font-bold border border-teal-100">
+                    <i class="fas fa-brain mr-2"></i>Bilingual Processing & Control
+                </span>
+                <span class="bg-teal-50 text-teal-800 px-4 py-2 rounded-full text-sm font-bold border border-teal-100">
+                    <i class="fas fa-network-wired mr-2"></i>fNIRS Hyperscanning in International Chinese Education
+                </span>
+                <span class="bg-teal-50 text-teal-800 px-4 py-2 rounded-full text-sm font-bold border border-teal-100">
+                    <i class="fas fa-book-reader mr-2"></i>Cognitive Neuroscience of Language
+                </span>
+            </div>
+        </section>
+
+        <!-- Publications -->
+        <section class="mb-10">
+            <h2 class="section-title text-xl font-bold uppercase tracking-wider">
+                <i class="fas fa-book-open section-icon"></i> Publications
+            </h2>
+            
+            <h3 class="font-bold text-slate-800 mb-4 text-md border-l-4 border-teal-500 pl-3">Peer-Reviewed Journal Articles <span class="text-sm font-normal text-slate-500 ml-2">(Selected within last 5 years)</span></h3>
+            <ul class="text-sm text-slate-800 space-y-4 pl-5 list-decimal marker:text-teal-600 marker:font-bold">
+                <!-- First/Corresponding Author -->
+                <li>
+                    <strong>Wang, Q.</strong>, Wang, X., Qu, H., Yan, G., Guo, J., & Wu, J. (2026). Extra Language Control Required for Morphological Inflections in Bilingual Word Production. <em>Bilingualism: Language and Cognition</em>. <span class="bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded text-xs font-bold">Under Review</span>
+                </li>
+                <li>
+                    Ji, Y.<sup>#</sup>, <strong>Wang, Q.<sup>#</sup></strong>, Zhao, H.<sup>#</sup>, & Wu, J. (2026). Speaking with an Accent of the non-target Language Enhance Language Control in Bilinguals. <em>Current Psychology</em>, 45(258). <span class="bg-teal-100 text-teal-800 px-1.5 py-0.5 rounded text-xs font-bold">SSCI Q2</span>
+                </li>
+                <li>
+                    Wu, J., Zhao, H., Wu, X., Liu, Q., Su, J., Ji, Y.<sup>*</sup> & <strong>Wang, Q.<sup>*</sup></strong> (2025). Word concreteness modulates bilingual language control during reading comprehension. <em>Journal of Experimental Psychology: Learning, Memory, and Cognition</em>, 51(3), 425–434. <span class="bg-teal-100 text-teal-800 px-1.5 py-0.5 rounded text-xs font-bold">SSCI Q2</span>
+                </li>
+                <li>
+                    <strong>Wang, Q.</strong>, Wu, X., Ji, Y., Yan, G., & Wu, J. (2022). Second Language Proficiency Modulates the Dependency of Bilingual Language Control on Domain-General Cognitive Control. <em>Frontiers in Psychology</em>, 13, 810573. <span class="bg-teal-100 text-teal-800 px-1.5 py-0.5 rounded text-xs font-bold">SSCI Q2</span>
+                </li>
+                <li>
+                    Wu, J., Wu, X.<sup>*</sup>, Liu, Q., Ji, Y., & <strong>Wang, Q.<sup>*</sup></strong> (2024). Is Language a Special Sign? Perspectives from Bilingual Control. <em>Psychological and Behavioral Research</em>, 22(6): 730-736. <span class="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded text-xs font-bold">CSSCI</span>
+                </li>
+            </ul>
+            
+            <!-- Other Collaborations -->
+            <h4 class="font-bold text-slate-500 text-xs uppercase tracking-widest mb-3 mt-6 pl-5">Other Collaborations</h4>
+            <ol start="6" class="text-sm text-slate-700 space-y-4 pl-5 list-decimal marker:text-slate-400">
+                <li>
+                    Wu, J., Ji, Y., Qu, H., Zuo, S., Liang, J., Su, J., <strong>Wang, Q.</strong>, Yan, G., & Ding, G. (2025). Transcranial magnetic stimulation of the right inferior frontal gyrus impairs bilinguals' performance in language-switching tasks. <em>Cognition</em>, 254, 105963. <span class="bg-teal-100 text-teal-800 px-1.5 py-0.5 rounded text-xs font-bold">SSCI Q1</span>
+                </li>
+                <li>
+                    Xue, Q., <strong>Wang, Q.</strong>, Wu, J., & Chen, L. (2025). From lexicon to phrase: Behavioral evidence for a dynamic cognitive mechanism underlying language control. <em>Acta Psychologica</em>, 258, 105277. <span class="bg-teal-100 text-teal-800 px-1.5 py-0.5 rounded text-xs font-bold">SSCI Q2</span>
+                </li>
+                <li>
+                    Wu, J., Ji, Y., Cai, C., Pu, X., <strong>Wang, Q.</strong>, Yan, G., Wang, Q., & Wang, X. (2024). Online transcranial magnetic stimulation reveals dynamic interactions between language control and processing in bilingual language production. <em>Cerebral Cortex</em>, 34(11), bhae452. <span class="bg-teal-100 text-teal-800 px-1.5 py-0.5 rounded text-xs font-bold">SCI Q2</span>
+                </li>
+            </ol>
+
+            <h3 class="font-bold text-slate-800 mb-3 mt-6 text-md border-l-4 border-teal-500 pl-3">Books / Chapters</h3>
+            <ul class="text-sm text-slate-800 pl-5 list-disc marker:text-slate-400">
+                <li>
+                    <strong>Wang, Q.</strong> (2020). Critical Discourse Analysis. In Sun, W., Zhou, S., & Shen, L. (Eds.), <em>New Sociolinguistics Tutorial</em> (pp. 267-280). World Affairs Press. (In Chinese)
+                </li>
+            </ul>
+        </section>
+
+        <!-- Conference -->
+        <section class="mb-10">
+            <h2 class="section-title text-xl font-bold uppercase tracking-wider">
+                <i class="fas fa-comments section-icon"></i> Conference Presentations
+            </h2>
+            <ul class="text-sm text-slate-800 space-y-3 pl-5 list-disc marker:text-teal-600">
+                <li>
+                    <strong class="text-teal-800">Oral Presentation:</strong> "Second Language Proficiency Modulates the Dependency of Bilingual Language Control on Domain-General Cognitive Control." <em>The 23rd National Academic Conference of Psychology</em>. Hohhot, China, Oct 2021.
+                </li>
+                <li>
+                    <strong class="text-teal-800">Poster:</strong> "The Neural Structures Underlying Hierarchical Language Representations in Chinese-English Bilinguals during Language Production." <em>The 31st Annual Meeting of the Organization for Human Brain Mapping (OHBM)</em>. Brisbane, Australia, June 2025.
+                </li>
+                <li>
+                    <strong class="text-teal-800">Poster:</strong> "Should We Use Students' Mother Tongue in Second Language Teaching? Not Recommended." <em>The Australasian Experimental Psychology Conference</em>. Sydney, Australia, June 2025.
+                </li>
+                <li>
+                    <strong class="text-teal-800">Poster:</strong> "Extra Language Control Required for Morphological Inflections in Bilingual Word Production." <em>The 16th Annual Neurobiology of Language Conference</em>. Brisbane, Australia, Oct 2024.
+                </li>
+            </ul>
+        </section>
+
+        <!-- Research Projects -->
+        <section class="mb-10">
+            <h2 class="section-title text-xl font-bold uppercase tracking-wider">
+                <i class="fas fa-flask section-icon"></i> Research Projects
+            </h2>
+            <div class="space-y-6">
+                
+                <!-- Social Science Fund -->
+                <div>
+                    <div class="flex justify-between items-baseline">
+                        <h3 class="font-bold text-slate-900 text-sm">National Social Science Fund of China (Youth Project)</h3>
+                        <span class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded">May 2025 – Dec. 2028</span>
+                    </div>
+                    <div class="text-xs text-teal-700 font-mono mb-1">Grant No. 25CYY077</div>
+                    <p class="text-sm text-slate-800 italic mb-1">"Dynamic Interaction Mechanisms of 'Representation-Control' in L2 Chinese Spoken Production"</p>
+                    <p class="text-sm text-slate-600"><span class="font-semibold text-slate-700">Role:</span> Data collection, data analysis, manuscript writing.</p>
+                </div>
+
+                <!-- NSFC -->
+                <div>
+                    <div class="flex justify-between items-baseline">
+                        <h3 class="font-bold text-slate-900 text-sm">National Natural Science Foundation of China (NSFC)</h3>
+                        <span class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded">Jan. 2022 – Dec. 2024</span>
+                    </div>
+                    <div class="text-xs text-teal-700 font-mono mb-1">Grant No. 32100854</div>
+                    <p class="text-sm text-slate-800 italic mb-1">"Neural Mechanisms of the Interplay between Bilingual Language Control and Language Representation: Based on Neuroimaging and Neuromodulation Technologies"</p>
+                    <p class="text-sm text-slate-600"><span class="font-semibold text-slate-700">Role:</span> Preparing experimental materials, data collection, data analysis, manuscript writing.</p>
+                </div>
+
+                <!-- Interdisciplinary (NO WRAP APPLIED) -->
+                <div>
+                    <div class="flex justify-between items-baseline">
+                        <h3 class="font-bold text-slate-900 text-sm">Interdisciplinary Research Fund for Doctoral Students, BNU</h3>
+                        <span class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded whitespace-nowrap">Sep. 2022 – Jun. 2024</span>
+                    </div>
+                    <div class="text-xs text-teal-700 font-mono mb-1">Grant No. BNUXKJC2214</div>
+                    <p class="text-sm text-slate-800 italic mb-1">"Neural Mechanisms of Pragmatic Understanding in Cross-Cultural Communication"</p>
+                    <p class="text-sm text-slate-600"><span class="font-semibold text-slate-700">Role:</span> Experimental design, data collection, data analysis.</p>
+                </div>
+
+                <!-- IESS -->
+                <div>
+                    <div class="flex justify-between items-baseline">
+                        <h3 class="font-bold text-slate-900 text-sm">Research Centre for Education Systems Science, BNU</h3>
+                        <span class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded">Jun. 2021 – Jun. 2023</span>
+                    </div>
+                    <div class="text-xs text-teal-700 font-mono mb-1">Grant No. IESS_Pure.Neuro_2021_WJJ</div>
+                    <p class="text-sm text-slate-800 italic mb-1">"Comparison of Neural Activities between Meaningful Learning and Rote Learning: An fMRI Study of Chinese Character Learning"</p>
+                    <p class="text-sm text-slate-600"><span class="font-semibold text-slate-700">Role:</span> Preparing experimental materials, experimental design, data collection, data organization.</p>
+                </div>
+                
+                <!-- MOE (NO WRAP APPLIED) -->
+                <div>
+                    <div class="flex justify-between items-baseline">
+                        <h3 class="font-bold text-slate-900 text-sm">Ministry of Education of China, Major Project of Key Research Base</h3>
+                        <span class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded whitespace-nowrap">2022 – Present</span>
+                    </div>
+                    <div class="text-xs text-teal-700 font-mono mb-1">Grant No. 22JJD190012</div>
+                    <p class="text-sm text-slate-800 italic mb-1">"Cognitive neural mechanisms of efficient reading: An eye-tracking and neuroimaging study."</p>
+                    <p class="text-sm text-slate-600"><span class="font-semibold text-slate-700">Role:</span> Experimental design, preparing experimental materials.</p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Professional Experience -->
+        <section class="mb-10">
+            <h2 class="section-title text-xl font-bold uppercase tracking-wider">
+                <i class="fas fa-briefcase section-icon"></i> Professional Experience
+            </h2>
+            
+            <div class="mb-5">
+                <div class="flex justify-between items-baseline">
+                    <h3 class="font-bold text-slate-900 text-md">Research Assistant</h3>
+                    <span class="text-sm font-bold text-teal-700">Aug. 2020 – Aug. 2022</span>
+                </div>
+                <div class="text-sm text-slate-700 italic">Faculty of Psychology, Tianjin Normal University (TNU)</div>
+                <div class="text-sm text-slate-600">Supervisor: Prof. Guoli Yan</div>
+            </div>
+
+            <div class="mb-5">
+                <div class="flex justify-between items-baseline">
+                    <h3 class="font-bold text-slate-900 text-md">Teaching Assistant</h3>
+                    <span class="text-sm font-bold text-teal-700">2018 – 2020</span>
+                </div>
+                <div class="text-sm text-slate-700 italic mb-2">Beijing Normal University (BNU)</div>
+                <ul class="list-none text-sm text-slate-600 space-y-1">
+                    <li><i class="fas fa-chalkboard-teacher text-teal-500 mr-2"></i><span class="font-medium text-slate-800">Introduction to Linguistics</span> (School of Chinese Language and Literature) <span class="text-xs text-slate-400 ml-1">[Sep 2019 - Jan 2020]</span></li>
+                    <li><i class="fas fa-chalkboard-teacher text-teal-500 mr-2"></i><span class="font-medium text-slate-800">Teach Less, Learn More</span> (Graduate School) <span class="text-xs text-slate-400 ml-1">[Mar 2019 - Apr 2019]</span></li>
+                    <li><i class="fas fa-chalkboard-teacher text-teal-500 mr-2"></i><span class="font-medium text-slate-800">Oral Chinese</span> (School of Chinese Language and Literature) <span class="text-xs text-slate-400 ml-1">[Mar 2018 - Jul 2019]</span></li>
+                </ul>
+            </div>
+
+            <!-- Volunteer -->
+            <div class="mb-5">
+                <div class="flex justify-between items-baseline">
+                    <h3 class="font-bold text-slate-900 text-md">Volunteer Teacher</h3>
+                    <span class="text-sm font-bold text-teal-700">Mar. 2015 – Jun. 2015</span>
+                </div>
+                <div class="text-sm text-slate-700 italic">Hongqi Farm Middle School, Xinjiang, China</div>
+                <div class="text-sm text-slate-600 mt-1">
+                    <i class="fas fa-user-friends text-teal-500 mr-2"></i>Chinese Teacher for Grade 9 Bilingual Class (Kizilsu Kyrgyz Autonomous Prefecture)
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills (COMPACTED) -->
+        <section class="mb-10">
+            <h2 class="section-title text-xl font-bold uppercase tracking-wider">
+                <i class="fas fa-tools section-icon"></i> Skills & Certifications
+            </h2>
+            <div class="text-sm text-slate-800">
+                <div class="flex flex-col md:flex-row mb-3 border-b border-slate-100 pb-2">
+                    <div class="md:w-1/4 font-bold text-teal-800 mb-1 md:mb-0">Data Analysis & Programming</div>
+                    <div class="md:w-3/4 text-slate-600"><strong>Machine Learning</strong>, R, MATLAB, JASP, Praat, SPSS</div>
+                </div>
+                <div class="flex flex-col md:flex-row mb-3 border-b border-slate-100 pb-2">
+                    <div class="md:w-1/4 font-bold text-teal-800 mb-1 md:mb-0">Experimental Design</div>
+                    <div class="md:w-3/4 text-slate-600">PsychoPy, E-Prime, <strong>fNIRS</strong>, fMRI (Learning)</div>
+                </div>
+                <div class="flex flex-col md:flex-row mb-3 border-b border-slate-100 pb-2">
+                    <div class="md:w-1/4 font-bold text-teal-800 mb-1 md:mb-0">Certifications</div>
+                    <div class="md:w-3/4 text-slate-600">Teacher Qualification Certificate (Senior High School)</div>
+                </div>
+                <div class="flex flex-col md:flex-row">
+                    <div class="md:w-1/4 font-bold text-teal-800 mb-1 md:mb-0">Languages</div>
+                    <div class="md:w-3/4 text-slate-600">Chinese (Native), English (IELTS 6.5)</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Honors & Awards (UPDATED WITH NO-WRAP) -->
+        <section>
+            <h2 class="section-title text-xl font-bold uppercase tracking-wider">
+                <i class="fas fa-award section-icon"></i> Honors & Awards
+            </h2>
+            <div class="text-sm text-slate-800 space-y-3">
+                <div class="flex justify-between items-center border-b border-dashed border-slate-200 pb-2">
+                    <span><strong>Outstanding Graduate</strong>, Shihezi University</span>
+                    <span class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded whitespace-nowrap">Jan. 2016</span>
+                </div>
+                <div class="flex justify-between items-center border-b border-dashed border-slate-200 pb-2">
+                    <span><strong>National Scholarship</strong> for Undergraduate Students</span>
+                    <span class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded whitespace-nowrap">Nov. 2014</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span><strong>Third Prize</strong>, National College English Competition for Non-English Majors</span>
+                    <span class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded whitespace-nowrap">Jun. 2014</span>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+</body>
+</html>
