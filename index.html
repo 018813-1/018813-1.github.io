@@ -1,395 +1,789 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Academic CV - Qiping Wang</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Roboto:wght@300;400;500;700&display=swap');
-        
-        body { background-color: #525659; padding: 40px 0; font-family: 'Roboto', sans-serif; }
-        .cv-container { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); margin-bottom: 40px; background: white; }
-        
-        /* Typography */
-        h1, h2, h3 { font-family: 'Merriweather', serif; }
-        
-        /* Custom Accents */
-        .accent-text { color: #0f766e; } /* Teal-700 */
-        .accent-bg { background-color: #f0fdfa; } /* Teal-50 */
-        .section-title { border-bottom: 2px solid #e5e7eb; padding-bottom: 0.5rem; margin-bottom: 1.5rem; color: #1e3a8a; display: flex; align-items: center; }
-        .section-icon { margin-right: 0.75rem; color: #0d9488; font-size: 1.1rem; }
-        
-        /* Print Settings */
-        @media print {
-            body { background: white; padding: 0; }
-            .cv-container { box-shadow: none; margin: 0; width: 100%; max-width: none; padding: 0 20px; }
-            .no-print { display: none; }
-            a { text-decoration: none; color: inherit; }
-            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>线上纪念馆 | Memorial Hall</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+
+  <!-- QRCode -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+
+  <!-- html2canvas: 用于保存纪念卡片 -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700;900&family=Merriweather:wght@300;400;700;900&display=swap');
+
+    :root {
+      --ink: #172033;
+      --muted: #64748b;
+      --accent: #0f766e;
+      --accent-2: #1e3a8a;
+      --paper: rgba(255, 255, 255, 0.88);
+      --paper-solid: #ffffff;
+      --line: rgba(148, 163, 184, 0.28);
+      --gold: #b68a36;
+      --shadow: 0 24px 80px rgba(15, 23, 42, 0.20);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: 'Noto Sans SC', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background:
+        linear-gradient(120deg, rgba(8, 47, 73, 0.68), rgba(15, 23, 42, 0.56)),
+        url('assets/background.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 12% 18%, rgba(255,255,255,0.16), transparent 28%),
+        radial-gradient(circle at 86% 10%, rgba(180, 83, 9, 0.12), transparent 22%),
+        radial-gradient(circle at 50% 100%, rgba(13, 148, 136, 0.14), transparent 28%);
+      z-index: 0;
+    }
+
+    .serif { font-family: 'Noto Serif SC', 'Merriweather', serif; }
+    .latin { font-family: 'Merriweather', serif; }
+
+    .glass {
+      background: var(--paper);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255,255,255,0.62);
+      box-shadow: var(--shadow);
+    }
+
+    .soft-card {
+      background: rgba(255,255,255,0.80);
+      border: 1px solid rgba(226, 232, 240, 0.75);
+      box-shadow: 0 14px 40px rgba(15, 23, 42, 0.08);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      font-family: 'Noto Serif SC', 'Merriweather', serif;
+      color: #14315f;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+    }
+
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(15, 118, 110, 0.35), transparent);
+    }
+
+    .nav-link {
+      position: relative;
+      color: rgba(255,255,255,0.84);
+      transition: 0.25s ease;
+    }
+    .nav-link:hover { color: white; transform: translateY(-1px); }
+    .nav-link.active { color: white; }
+    .nav-link.active::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -9px;
+      height: 2px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.88);
+    }
+
+    .float-petal {
+      position: fixed;
+      top: -40px;
+      z-index: 25;
+      pointer-events: none;
+      animation: fall linear forwards;
+      filter: drop-shadow(0 8px 8px rgba(0,0,0,0.18));
+    }
+
+    @keyframes fall {
+      0% { transform: translate3d(0, -60px, 0) rotate(0deg); opacity: 0; }
+      10% { opacity: 1; }
+      100% { transform: translate3d(var(--drift), 110vh, 0) rotate(520deg); opacity: 0; }
+    }
+
+    .candle-flame {
+      width: 16px;
+      height: 24px;
+      border-radius: 999px 999px 999px 999px;
+      background: radial-gradient(circle at 50% 72%, #fff7ad 0 18%, #f59e0b 45%, #ef4444 82%, transparent 83%);
+      box-shadow: 0 0 18px rgba(245, 158, 11, 0.92), 0 0 34px rgba(251, 191, 36, 0.55);
+      animation: flicker 1.7s ease-in-out infinite;
+      transform-origin: bottom center;
+    }
+
+    @keyframes flicker {
+      0%, 100% { transform: scaleY(1) rotate(-2deg); opacity: 0.92; }
+      35% { transform: scaleY(1.12) rotate(2deg); opacity: 1; }
+      70% { transform: scaleY(0.92) rotate(-1deg); opacity: 0.88; }
+    }
+
+    .fade-up {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .fade-up.show { opacity: 1; transform: translateY(0); }
+
+    .timeline-line {
+      position: absolute;
+      left: 17px;
+      top: 14px;
+      bottom: 12px;
+      width: 2px;
+      background: linear-gradient(#0d9488, rgba(13, 148, 136, 0.08));
+    }
+
+    .modal-backdrop {
+      background: rgba(15, 23, 42, 0.72);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .scrollbar-thin::-webkit-scrollbar { width: 8px; }
+    .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(15, 118, 110, 0.25); border-radius: 999px; }
+    .scrollbar-thin::-webkit-scrollbar-track { background: rgba(226, 232, 240, 0.5); }
+
+    @media print {
+      body { background: white !important; padding: 0; }
+      .no-print { display: none !important; }
+      .glass, .soft-card { box-shadow: none !important; backdrop-filter: none !important; }
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    }
+  </style>
 </head>
+
 <body>
+  <!-- =========================================================
+       只需要替换这里：CONFIG 配置区
+       1. assets/photo.jpg：人物照片
+       2. assets/background.jpg：背景图
+       3. assets/music.mp3：纯音乐音频
+       4. person、bio、memorialText、timeline 等文案
+       ========================================================= -->
+  <script>
+    const CONFIG = {
+      person: {
+        name: '纪念人物姓名',
+        englishName: 'In Loving Memory',
+        title: '线上纪念馆',
+        dates: '1935.07.12 — 2026.05.04',
+        identity: [
+          '中国著名心理学家',
+          '认知心理学与认知神经科学重要先驱',
+          '北京师范大学资深教授'
+        ],
+        photo: 'assets/photo.jpg',
+        background: 'assets/background.jpg',
+        music: 'assets/music.mp3'
+      },
 
-    <div class="cv-container max-w-[850px] mx-auto bg-white p-12 text-slate-800">
-        
-        <!-- Header with Photo -->
-        <header class="flex justify-between items-start mb-10 border-b border-slate-100 pb-8">
-            <!-- Left: Text Info -->
-            <div class="flex-1 pr-4 pt-2">
-                <h1 class="text-4xl font-black text-slate-900 mb-2 tracking-wide uppercase">Qiping Wang</h1>
-                <p class="text-teal-700 font-medium text-lg mb-4">Ph.D. Candidate in Linguistics</p>
-                
-                <div class="text-sm text-slate-600 space-y-2">
-                    <div class="flex items-center"><i class="fas fa-map-marker-alt text-teal-600 w-6 text-center mr-2"></i>Beijing, China</div>
-                    <div class="flex items-center"><i class="fas fa-envelope text-teal-600 w-6 text-center mr-2"></i>WQP@mail.bnu.edu.cn</div>
-                    <div class="flex items-center"><i class="fas fa-phone text-teal-600 w-6 text-center mr-2"></i>(+86) 188-1313-5698</div>
-                    <!-- ResearchGate Full Link -->
-                    <div class="flex items-start">
-                        <i class="fab fa-researchgate text-teal-600 w-6 text-center mr-2 mt-1"></i>
-                        <a href="https://www.researchgate.net/profile/Qiping-Wang"
-                           class="hover:text-teal-700 hover:underline transition-colors whitespace-nowrap text-xs font-mono pt-0.5">https://www.researchgate.net/profile/Qiping-Wang</a>
-                    </div>
-                </div>
-            </div>
+      heroQuote: '先生虽已远去，其学术精神与人格风范，仍将照亮后来者之路。',
 
-            <!-- Right: Photo -->
-            <div class="w-32 h-40 flex-shrink-0">
-                <img src="https://d41chssnpqdne.cloudfront.net/user_upload_by_module/chat_bot/files/5235341/Yh4mO5r9kUkF1I8J?Expires=1770197244&Signature=TBQoXaOK-mec6Cn2J3D0-d4NzvJ48FGwVlMu8MK0jSTGFnXYiGQeMGPKkHl7sMXNtatLn4BfDvHwNjSzYUGfVB~xn-5PeSNR0DNyAhSXDDEd7x400lk2XUBJCLoJIQ1O0Qvmsuxh7fEF94~GFZM2GYj943LAdHqub1t~IPAz9xTVrTF8N3Tv1trjjL6w1eSnq35Lstj~9zIcb7~2Qcvij6Gy5oknf6zF8z9zH7KQPJ5dymTGAvWOoRNvvKWt0iOYoKhyZVQA0aLIk2reO5VUVvjxVaYHFfD8IVdyGaXw3f96CiskzpTregU~O1yp8D4l0~4yY-FB0a~ZiJFr48swrg__&Key-Pair-Id=K3USGZIKWMDCSX"
-                     alt="Qiping Wang"
-                     class="w-full h-full rounded-xl object-cover border-4 border-slate-50 shadow-md">
-            </div>
-        </header>
+      memorialText: `先生一生笃学，躬耕杏坛六十余载。\n作为我国认知心理学、心理语言学与认知神经科学的重要先驱，先生以严谨的学术追求、宽厚的人格风范和对后辈学人的深切关怀，影响了一代又一代学人。\n\n治学严谨，润物无声；心怀家国，风范长存。\n愿先生安息，风范永存，学术长青。`,
 
-        <!-- Education -->
-        <section class="mb-8">
-            <h2 class="section-title text-xl font-bold uppercase tracking-wider">
-                <i class="fas fa-graduation-cap section-icon"></i> Education
-            </h2>
-            
-            <!-- PhD -->
-            <div class="mb-6 relative">
-                <div class="flex justify-between items-baseline mb-1">
-                    <h3 class="font-bold text-slate-900 text-lg">Beijing Normal University (BNU)</h3>
-                    <span class="text-sm font-bold text-teal-700">Sep. 2022 – Jul. 2026 (Exp.)</span>
-                </div>
-                <div class="text-slate-800 font-medium">Doctor of Arts in Linguistics and Applied Linguistics</div>
-                <div class="text-sm text-slate-600 mt-1"><span class="font-semibold text-slate-500">Supervisor:</span> Prof. Liping Feng</div>
-            </div>
+      bio: `这里可以放人物生平简介。建议分为三层：第一层写其学术身份与主要贡献；第二层写其教学、育人和学科建设贡献；第三层写其人格风范与后辈影响。\n\n你后面只需要把这一段替换为正式生平文案即可。`,
 
-            <!-- Visiting PhD (Highlighted) -->
-            <div class="mb-6 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-400">
-                <div class="flex justify-between items-baseline mb-1">
-                    <h3 class="font-bold text-slate-800 text-md">Macquarie University (MQU), Australia</h3>
-                    <span class="text-sm font-bold text-blue-700">Feb. 2025 – Feb. 2026</span>
-                </div>
-                <div class="text-slate-700 italic text-sm">Visiting Student, Department of Linguistics</div>
-                <div class="text-sm text-slate-600 mt-1"><span class="font-semibold text-slate-500">Supervisor:</span> Dr. Xin Wang</div>
-            </div>
+      timeline: [
+        { year: '1935', title: '出生', text: '这里填写重要人生节点。' },
+        { year: '长期', title: '躬耕杏坛', text: '这里填写教学、科研与育人经历。' },
+        { year: '贡献', title: '学术传承', text: '这里填写代表性成果、学术影响与学科贡献。' },
+        { year: '今日', title: '风范长存', text: '这里填写后辈追思与纪念。' }
+      ],
 
-            <!-- Master -->
-            <div class="mb-6">
-                <div class="flex justify-between items-baseline mb-1">
-                    <h3 class="font-bold text-slate-900 text-lg">Beijing Normal University (BNU)</h3>
-                    <span class="text-sm font-bold text-teal-700">Sep. 2017 – Jul. 2020</span>
-                </div>
-                <div class="text-slate-800 font-medium">Master of Arts in Linguistics and Applied Linguistics</div>
-                <div class="text-sm text-slate-600 mt-1"><span class="font-semibold text-slate-500">Supervisor:</span> Prof. Shihong Zhou</div>
-            </div>
+      gallery: [
+        { src: 'assets/photo.jpg', caption: '纪念照片' },
+        { src: 'assets/photo-2.jpg', caption: '教学与学术瞬间' },
+        { src: 'assets/photo-3.jpg', caption: '与师友同行' }
+      ],
 
-            <!-- Visiting Master -->
-            <div class="mb-4 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-400">
-                <div class="flex justify-between items-baseline mb-1">
-                    <h3 class="font-bold text-slate-800 text-md">The University of Oklahoma (OU), U.S.</h3>
-                    <span class="text-sm font-bold text-blue-700">Jul. 2018 – Oct. 2018</span>
-                </div>
-                <div class="text-slate-700 italic text-sm">Visiting Student</div>
-            </div>
+      defaultMessages: [
+        { name: '纪念馆', text: '愿先生安息，风范永存，学术长青。', time: '永久纪念' }
+      ]
+    };
+  </script>
 
-            <!-- Bachelor -->
-            <div>
-                <div class="flex justify-between items-baseline mb-1">
-                    <h3 class="font-bold text-slate-900 text-lg">Shihezi University (SHZU)</h3>
-                    <span class="text-sm font-bold text-teal-700">Sep. 2012 – Jul. 2016</span>
-                </div>
-                <div class="text-slate-800 font-medium">Bachelor of Arts in Chinese Language and Literature</div>
-            </div>
-        </section>
+  <!-- 音乐 -->
+  <audio id="bgm" loop preload="auto"></audio>
 
-        <!-- Research Interests -->
-        <section class="mb-10">
-            <h2 class="section-title text-xl font-bold uppercase tracking-wider">
-                <i class="fas fa-lightbulb section-icon"></i> Research Interests
-            </h2>
-            <div class="flex flex-wrap gap-3">
-                <span class="bg-teal-50 text-teal-800 px-4 py-2 rounded-full text-sm font-bold border border-teal-100">
-                    <i class="fas fa-brain mr-2"></i>Bilingual Processing & Control
-                </span>
-                <span class="bg-teal-50 text-teal-800 px-4 py-2 rounded-full text-sm font-bold border border-teal-100">
-                    <i class="fas fa-network-wired mr-2"></i>fNIRS Hyperscanning in International Chinese Education
-                </span>
-                <span class="bg-teal-50 text-teal-800 px-4 py-2 rounded-full text-sm font-bold border border-teal-100">
-                    <i class="fas fa-book-reader mr-2"></i>Cognitive Neuroscience of Language
-                </span>
-            </div>
-        </section>
-
-        <!-- Publications -->
-        <section class="mb-10">
-            <h2 class="section-title text-xl font-bold uppercase tracking-wider">
-                <i class="fas fa-book-open section-icon"></i> Publications
-            </h2>
-            
-            <h3 class="font-bold text-slate-800 mb-4 text-md border-l-4 border-teal-500 pl-3">
-                Peer-Reviewed Journal Articles
-                <span class="text-sm font-normal text-slate-500 ml-2">(Selected within last 5 years)</span>
-            </h3>
-
-            <ul class="text-sm text-slate-800 space-y-4 pl-5 list-decimal marker:text-teal-600 marker:font-bold">
-                <!-- First/Corresponding Author -->
-                <li>
-                    <strong>Wang, Q.</strong>, Wang, X., Qu, H., Yan, G., Guo, J., & Wu, J. (Under Review).
-                    Extra Language Control Required for Morphological Inflections in Bilingual Word Production.
-                    <em>Bilingualism: Language and Cognition</em>.
-                </li>
-                <li>
-                    Ji, Y.<sup>co–first author</sup>, <strong>Wang, Q.<sup>co–first author</sup></strong>, Zhao, H.<sup>co–first author</sup>, & Wu, J. (2026).
-                    Speaking with an Accent of the non-target Language Enhance Language Control in Bilinguals.
-                    <em>Current Psychology</em>, 45(258).
-                    <span class="bg-teal-100 text-teal-800 px-1.5 py-0.5 rounded text-xs font-bold">SSCI Q2</span>
-                </li>
-                <li>
-                    Wu, J., Zhao, H., Wu, X., Liu, Q., Su, J., Ji, Y.<sup>corresponding author</sup> & <strong>Wang, Q.<sup>corresponding author</sup></strong> (2025).
-                    Word concreteness modulates bilingual language control during reading comprehension.
-                    <em>Journal of Experimental Psychology: Learning, Memory, and Cognition</em>, 51(3), 425–434.
-                    <span class="bg-teal-100 text-teal-800 px-1.5 py-0.5 rounded text-xs font-bold">SSCI Q2</span>
-                </li>
-                <li>
-                    <strong>Wang, Q.</strong>, Wu, X., Ji, Y., Yan, G., & Wu, J. (2022).
-                    Second Language Proficiency Modulates the Dependency of Bilingual Language Control on Domain-General Cognitive Control.
-                    <em>Frontiers in Psychology</em>, 13, 810573.
-                    <span class="bg-teal-100 text-teal-800 px-1.5 py-0.5 rounded text-xs font-bold">SSCI Q2</span>
-                </li>
-                <li>
-                    Wu, J., Wu, X.<sup>corresponding author</sup>, Liu, Q., Ji, Y., & <strong>Wang, Q.<sup>corresponding author</sup></strong> (2024).
-                    Is Language a Special Sign? Perspectives from Bilingual Control.
-                    <em>Psychological and Behavioral Research</em>, 22(6): 730-736.
-                    <span class="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded text-xs font-bold">CSSCI</span>
-                </li>
-            </ul>
-            
-            <!-- Other Collaborations -->
-            <h4 class="font-bold text-slate-500 text-xs uppercase tracking-widest mb-3 mt-6 pl-5">Other Collaborations</h4>
-            <ol start="6" class="text-sm text-slate-700 space-y-4 pl-5 list-decimal marker:text-slate-400">
-                <li>
-                    Wu, J., Ji, Y., Qu, H., Zuo, S., Liang, J., Su, J., <strong>Wang, Q.</strong>, Yan, G., & Ding, G. (2025).
-                    Transcranial magnetic stimulation of the right inferior frontal gyrus impairs bilinguals' performance in language-switching tasks.
-                    <em>Cognition</em>, 254, 105963.
-                    <span class="bg-teal-100 text-teal-800 px-1.5 py-0.5 rounded text-xs font-bold">SSCI Q1</span>
-                </li>
-                <li>
-                    Xue, Q., <strong>Wang, Q.</strong>, Wu, J., & Chen, L. (2025).
-                    From lexicon to phrase: Behavioral evidence for a dynamic cognitive mechanism underlying language control.
-                    <em>Acta Psychologica</em>, 258, 105277.
-                    <span class="bg-teal-100 text-teal-800 px-1.5 py-0.5 rounded text-xs font-bold">SSCI Q2</span>
-                </li>
-                <li>
-                    Wu, J., Ji, Y., Cai, C., Pu, X., <strong>Wang, Q.</strong>, Yan, G., Wang, Q., & Wang, X. (2024).
-                    Online transcranial magnetic stimulation reveals dynamic interactions between language control and processing in bilingual language production.
-                    <em>Cerebral Cortex</em>, 34(11), bhae452.
-                    <span class="bg-teal-100 text-teal-800 px-1.5 py-0.5 rounded text-xs font-bold">SCI Q2</span>
-                </li>
-            </ol>
-
-            <h3 class="font-bold text-slate-800 mb-3 mt-6 text-md border-l-4 border-teal-500 pl-3">Books / Chapters</h3>
-            <ul class="text-sm text-slate-800 pl-5 list-disc marker:text-slate-400">
-                <li>
-                    <strong>Wang, Q.</strong> (2020). Critical Discourse Analysis. In Sun, W., Zhou, S., & Shen, L. (Eds.),
-                    <em>New Sociolinguistics Tutorial</em> (pp. 267-280). World Affairs Press. (In Chinese)
-                </li>
-            </ul>
-        </section>
-
-        <!-- Conference -->
-        <section class="mb-10">
-            <h2 class="section-title text-xl font-bold uppercase tracking-wider">
-                <i class="fas fa-comments section-icon"></i> Conference Presentations
-            </h2>
-            <ul class="text-sm text-slate-800 space-y-3 pl-5 list-disc marker:text-teal-600">
-                <li>
-                    <strong class="text-teal-800">Oral Presentation:</strong> "Second Language Proficiency Modulates the Dependency of Bilingual Language Control on Domain-General Cognitive Control."
-                    <em>The 23rd National Academic Conference of Psychology</em>. Hohhot, China, Oct 2021.
-                </li>
-                <li>
-                    <strong class="text-teal-800">Poster:</strong> "The Neural Structures Underlying Hierarchical Language Representations in Chinese-English Bilinguals during Language Production."
-                    <em>The 31st Annual Meeting of the Organization for Human Brain Mapping (OHBM)</em>. Brisbane, Australia, June 2025.
-                </li>
-                <li>
-                    <strong class="text-teal-800">Poster:</strong> "Should We Use Students' Mother Tongue in Second Language Teaching? Not Recommended."
-                    <em>The Australasian Experimental Psychology Conference</em>. Sydney, Australia, June 2025.
-                </li>
-                <li>
-                    <strong class="text-teal-800">Poster:</strong> "Extra Language Control Required for Morphological Inflections in Bilingual Word Production."
-                    <em>The 16th Annual Neurobiology of Language Conference</em>. Brisbane, Australia, Oct 2024.
-                </li>
-            </ul>
-        </section>
-
-        <!-- Research Projects -->
-        <section class="mb-10">
-            <h2 class="section-title text-xl font-bold uppercase tracking-wider">
-                <i class="fas fa-flask section-icon"></i> Research Projects
-            </h2>
-            <div class="space-y-6">
-                
-                <!-- Social Science Fund -->
-                <div>
-                    <div class="flex justify-between items-baseline">
-                        <h3 class="font-bold text-slate-900 text-sm">National Social Science Fund of China (Youth Project)</h3>
-                        <span class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded">May 2025 – Dec. 2028</span>
-                    </div>
-                    <div class="text-xs text-teal-700 font-mono mb-1">Grant No. 25CYY077</div>
-                    <p class="text-sm text-slate-800 italic mb-1">"Dynamic Interaction Mechanisms of 'Representation-Control' in L2 Chinese Spoken Production"</p>
-                    <p class="text-sm text-slate-600"><span class="font-semibold text-slate-700">Role (participated):</span> Data collection, data analysis, manuscript writing.</p>
-                </div>
-
-                <!-- NSFC -->
-                <div>
-                    <div class="flex justify-between items-baseline">
-                        <h3 class="font-bold text-slate-900 text-sm">National Natural Science Foundation of China (NSFC)</h3>
-                        <span class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded">Jan. 2022 – Dec. 2024</span>
-                    </div>
-                    <div class="text-xs text-teal-700 font-mono mb-1">Grant No. 32100854</div>
-                    <p class="text-sm text-slate-800 italic mb-1">"Neural Mechanisms of the Interplay between Bilingual Language Control and Language Representation: Based on Neuroimaging and Neuromodulation Technologies"</p>
-                    <p class="text-sm text-slate-600"><span class="font-semibold text-slate-700">Role (participated):</span> Preparing experimental materials, data collection, data analysis, manuscript writing.</p>
-                </div>
-
-                <!-- Interdisciplinary -->
-                <div>
-                    <div class="flex justify-between items-baseline">
-                        <h3 class="font-bold text-slate-900 text-sm">Interdisciplinary Research Fund for Doctoral Students, BNU</h3>
-                        <span class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded whitespace-nowrap">Sep. 2022 – Jun. 2024</span>
-                    </div>
-                    <div class="text-xs text-teal-700 font-mono mb-1">Grant No. BNUXKJC2214</div>
-                    <p class="text-sm text-slate-800 italic mb-1">"Neural Mechanisms of Pragmatic Understanding in Cross-Cultural Communication"</p>
-                    <p class="text-sm text-slate-600"><span class="font-semibold text-slate-700">Role (participated):</span> Experimental design, data collection, data analysis.</p>
-                </div>
-
-                <!-- IESS -->
-                <div>
-                    <div class="flex justify-between items-baseline">
-                        <h3 class="font-bold text-slate-900 text-sm">Research Centre for Education Systems Science, BNU</h3>
-                        <span class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded">Jun. 2021 – Jun. 2023</span>
-                    </div>
-                    <div class="text-xs text-teal-700 font-mono mb-1">Grant No. IESS_Pure.Neuro_2021_WJJ</div>
-                    <p class="text-sm text-slate-800 italic mb-1">"Comparison of Neural Activities between Meaningful Learning and Rote Learning: An fMRI Study of Chinese Character Learning"</p>
-                    <p class="text-sm text-slate-600"><span class="font-semibold text-slate-700">Role (participated):</span> Preparing experimental materials, experimental design, data collection, data organization.</p>
-                </div>
-                
-                <!-- MOE -->
-                <div>
-                    <div class="flex justify-between items-baseline">
-                        <h3 class="font-bold text-slate-900 text-sm">Ministry of Education of China, Major Project of Key Research Base</h3>
-                        <span class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded whitespace-nowrap">2022 – Present</span>
-                    </div>
-                    <div class="text-xs text-teal-700 font-mono mb-1">Grant No. 22JJD190012</div>
-                    <p class="text-sm text-slate-800 italic mb-1">"Cognitive neural mechanisms of efficient reading: An eye-tracking and neuroimaging study."</p>
-                    <p class="text-sm text-slate-600"><span class="font-semibold text-slate-700">Role (participated):</span> Experimental design, preparing experimental materials.</p>
-                </div>
-
-            </div>
-        </section>
-
-        <!-- Professional Experience -->
-        <section class="mb-10">
-            <h2 class="section-title text-xl font-bold uppercase tracking-wider">
-                <i class="fas fa-briefcase section-icon"></i> Professional Experience
-            </h2>
-            
-            <div class="mb-5">
-                <div class="flex justify-between items-baseline">
-                    <h3 class="font-bold text-slate-900 text-md">Research Assistant</h3>
-                    <span class="text-sm font-bold text-teal-700">Aug. 2020 – Aug. 2022</span>
-                </div>
-                <div class="text-sm text-slate-700 italic">Faculty of Psychology, Tianjin Normal University (TNU)</div>
-                <div class="text-sm text-slate-600">Supervisor: Prof. Guoli Yan</div>
-            </div>
-
-            <div class="mb-5">
-                <div class="flex justify-between items-baseline">
-                    <h3 class="font-bold text-slate-900 text-md">Teaching Assistant</h3>
-                    <span class="text-sm font-bold text-teal-700">2018 – 2020</span>
-                </div>
-                <div class="text-sm text-slate-700 italic mb-2">Beijing Normal University (BNU)</div>
-                <ul class="list-none text-sm text-slate-600 space-y-1">
-                    <li><i class="fas fa-chalkboard-teacher text-teal-500 mr-2"></i><span class="font-medium text-slate-800">Introduction to Linguistics</span> (School of Chinese Language and Literature) <span class="text-xs text-slate-400 ml-1">[Sep 2019 - Jan 2020]</span></li>
-                    <li><i class="fas fa-chalkboard-teacher text-teal-500 mr-2"></i><span class="font-medium text-slate-800">Teach Less, Learn More</span> (Graduate School) <span class="text-xs text-slate-400 ml-1">[Mar 2019 - Apr 2019]</span></li>
-                    <li><i class="fas fa-chalkboard-teacher text-teal-500 mr-2"></i><span class="font-medium text-slate-800">Oral Chinese</span> (School of Chinese Language and Literature) <span class="text-xs text-slate-400 ml-1">[Mar 2018 - Jul 2019]</span></li>
-                </ul>
-            </div>
-
-            <!-- Volunteer -->
-            <div class="mb-5">
-                <div class="flex justify-between items-baseline">
-                    <h3 class="font-bold text-slate-900 text-md">Volunteer Teacher</h3>
-                    <span class="text-sm font-bold text-teal-700">Mar. 2015 – Jun. 2015</span>
-                </div>
-                <div class="text-sm text-slate-700 italic">Hongqi Farm Middle School, Xinjiang, China</div>
-                <div class="text-sm text-slate-600 mt-1">
-                    <i class="fas fa-user-friends text-teal-500 mr-2"></i>Chinese Teacher for Grade 9 Bilingual Class (Kizilsu Kyrgyz Autonomous Prefecture)
-                </div>
-            </div>
-        </section>
-
-        <!-- Skills (COMPACTED) -->
-        <section class="mb-10">
-            <h2 class="section-title text-xl font-bold uppercase tracking-wider">
-                <i class="fas fa-tools section-icon"></i> Skills & Certifications
-            </h2>
-            <div class="text-sm text-slate-800">
-                <div class="flex flex-col md:flex-row mb-3 border-b border-slate-100 pb-2">
-                    <div class="md:w-1/4 font-bold text-teal-800 mb-1 md:mb-0">Data Analysis & Programming</div>
-                    <div class="md:w-3/4 text-slate-600">Machine Learning, R, MATLAB, JASP, Praat</div>
-                </div>
-                <div class="flex flex-col md:flex-row mb-3 border-b border-slate-100 pb-2">
-                    <div class="md:w-1/4 font-bold text-teal-800 mb-1 md:mb-0">Experimental Design</div>
-                    <div class="md:w-3/4 text-slate-600">PsychoPy, fNIRS, fMRI (Learning)</div>
-                </div>
-                <div class="flex flex-col md:flex-row mb-3 border-b border-slate-100 pb-2">
-                    <div class="md:w-1/4 font-bold text-teal-800 mb-1 md:mb-0">Certifications</div>
-                    <div class="md:w-3/4 text-slate-600">Teacher Qualification Certificate (Senior High School)</div>
-                </div>
-                <div class="flex flex-col md:flex-row">
-                    <div class="md:w-1/4 font-bold text-teal-800 mb-1 md:mb-0">Languages</div>
-                    <div class="md:w-3/4 text-slate-600">Chinese (Native), English (IELTS 6.5)</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Honors & Awards -->
-        <section>
-            <h2 class="section-title text-xl font-bold uppercase tracking-wider">
-                <i class="fas fa-award section-icon"></i> Honors & Awards
-            </h2>
-            <div class="text-sm text-slate-800 space-y-3">
-                <div class="flex justify-between items-center border-b border-dashed border-slate-200 pb-2">
-                    <span><strong>Outstanding Graduate</strong>, Shihezi University</span>
-                    <span class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded whitespace-nowrap">Jan. 2016</span>
-                </div>
-                <div class="flex justify-between items-center border-b border-dashed border-slate-200 pb-2">
-                    <span><strong>National Scholarship</strong> for Undergraduate Students</span>
-                    <span class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded whitespace-nowrap">Nov. 2014</span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span><strong>Third Prize</strong>, National College English Competition for Non-English Majors</span>
-                    <span class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded whitespace-nowrap">Jun. 2014</span>
-                </div>
-            </div>
-        </section>
-
+  <!-- 顶部导航 -->
+  <nav class="no-print fixed top-0 left-0 right-0 z-40 bg-slate-950/45 backdrop-blur-xl border-b border-white/10">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="#top" class="flex items-center gap-3 text-white">
+        <span class="w-9 h-9 rounded-full bg-white/15 border border-white/20 flex items-center justify-center">
+          <i class="fa-solid fa-dove text-white"></i>
+        </span>
+        <span class="serif font-bold tracking-widest text-sm md:text-base">线上纪念馆</span>
+      </a>
+      <div class="hidden md:flex items-center gap-8 text-sm">
+        <a class="nav-link" href="#memorial">纪念文</a>
+        <a class="nav-link" href="#life">生平</a>
+        <a class="nav-link" href="#timeline">年表</a>
+        <a class="nav-link" href="#gallery">影像</a>
+        <a class="nav-link" href="#guestbook">留言</a>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="musicBtn" class="px-3 py-2 rounded-full bg-white/12 hover:bg-white/20 text-white text-sm transition" title="播放/暂停音乐">
+          <i class="fa-solid fa-music mr-1"></i><span class="hidden sm:inline">音乐</span>
+        </button>
+        <button id="shareBtn" class="px-3 py-2 rounded-full bg-white/12 hover:bg-white/20 text-white text-sm transition" title="分享页面">
+          <i class="fa-solid fa-share-nodes mr-1"></i><span class="hidden sm:inline">分享</span>
+        </button>
+      </div>
     </div>
+  </nav>
 
+  <main id="top" class="relative z-10 pt-24 pb-16 px-4">
+    <!-- Hero -->
+    <section class="max-w-6xl mx-auto glass rounded-[2rem] overflow-hidden fade-up">
+      <div class="grid lg:grid-cols-[1.08fr_0.92fr] min-h-[620px]">
+        <div class="p-7 md:p-12 lg:p-14 flex flex-col justify-between">
+          <div>
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-teal-50 text-teal-800 border border-teal-100 text-sm font-bold mb-8">
+              <i class="fa-solid fa-leaf"></i>
+              <span id="heroTitle">线上纪念馆</span>
+            </div>
+
+            <h1 id="personName" class="serif text-5xl md:text-7xl font-black text-slate-950 tracking-wide leading-tight">纪念人物姓名</h1>
+            <p id="englishName" class="latin text-lg md:text-xl text-teal-700 mt-4 tracking-widest uppercase">In Loving Memory</p>
+            <p id="dates" class="text-slate-500 mt-5 text-lg md:text-xl font-medium">1935.07.12 — 2026.05.04</p>
+
+            <div id="identityList" class="mt-8 space-y-3 text-slate-700"></div>
+
+            <blockquote class="mt-10 border-l-4 border-amber-500/70 pl-5 serif text-xl md:text-2xl leading-relaxed text-slate-700">
+              <span id="heroQuote"></span>
+            </blockquote>
+          </div>
+
+          <div class="mt-10 flex flex-wrap gap-3 no-print">
+            <button id="flowerBtn" class="group px-5 py-3 rounded-full bg-teal-700 text-white hover:bg-teal-800 transition shadow-lg shadow-teal-900/15">
+              <i class="fa-solid fa-seedling mr-2 group-hover:scale-110 transition"></i>献花
+              <span class="ml-2 bg-white/18 px-2 py-0.5 rounded-full" id="flowerCount">0</span>
+            </button>
+            <button id="candleBtn" class="group px-5 py-3 rounded-full bg-amber-600 text-white hover:bg-amber-700 transition shadow-lg shadow-amber-900/15">
+              <i class="fa-solid fa-fire-flame-curved mr-2 group-hover:scale-110 transition"></i>点烛
+              <span class="ml-2 bg-white/18 px-2 py-0.5 rounded-full" id="candleCount">0</span>
+            </button>
+            <a href="#guestbook" class="px-5 py-3 rounded-full bg-slate-900 text-white hover:bg-slate-800 transition shadow-lg shadow-slate-900/15">
+              <i class="fa-solid fa-pen-nib mr-2"></i>写下追思
+            </a>
+          </div>
+        </div>
+
+        <div class="relative bg-slate-900/5 p-7 md:p-10 flex items-center justify-center">
+          <div class="absolute inset-8 rounded-[2rem] border border-white/45"></div>
+          <div class="relative w-full max-w-[390px]">
+            <div class="absolute -top-8 -right-8 w-28 h-28 bg-teal-200/40 rounded-full blur-2xl"></div>
+            <div class="absolute -bottom-8 -left-8 w-28 h-28 bg-amber-200/45 rounded-full blur-2xl"></div>
+            <div class="relative rounded-[2rem] p-4 bg-white/65 border border-white/70 shadow-2xl">
+              <img id="mainPhoto" src="assets/photo.jpg" alt="纪念人物照片" class="w-full aspect-[4/5] object-cover rounded-[1.45rem] bg-slate-100" onerror="this.src='https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=900&q=80'" />
+            </div>
+            <div class="mt-5 flex justify-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-teal-600"></span>
+              <span class="w-2 h-2 rounded-full bg-teal-300"></span>
+              <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 数据仪式区 -->
+    <section class="max-w-6xl mx-auto grid md:grid-cols-3 gap-5 mt-6 fade-up">
+      <div class="soft-card rounded-3xl p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-slate-500">已献鲜花</p>
+            <p class="text-3xl font-black text-teal-700"><span id="flowerCountCard">0</span><span class="text-base ml-1">束</span></p>
+          </div>
+          <div class="w-14 h-14 rounded-2xl bg-teal-50 flex items-center justify-center text-2xl">🌼</div>
+        </div>
+      </div>
+      <div class="soft-card rounded-3xl p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-slate-500">已点烛光</p>
+            <p class="text-3xl font-black text-amber-700"><span id="candleCountCard">0</span><span class="text-base ml-1">支</span></p>
+          </div>
+          <div class="w-14 h-14 rounded-2xl bg-amber-50 flex items-center justify-center">
+            <div class="candle-flame"></div>
+          </div>
+        </div>
+      </div>
+      <div class="soft-card rounded-3xl p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-slate-500">追思留言</p>
+            <p class="text-3xl font-black text-blue-800"><span id="messageCountCard">0</span><span class="text-base ml-1">条</span></p>
+          </div>
+          <div class="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-2xl">🖋️</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 纪念文 -->
+    <section id="memorial" class="max-w-6xl mx-auto mt-8 glass rounded-[2rem] p-7 md:p-10 fade-up">
+      <h2 class="section-title text-2xl md:text-3xl mb-8"><i class="fa-solid fa-feather-pointed text-teal-600"></i>纪念文</h2>
+      <div class="grid lg:grid-cols-[1fr_310px] gap-8">
+        <article class="serif text-lg md:text-xl leading-[2.15] text-slate-700 whitespace-pre-line" id="memorialText"></article>
+        <aside class="soft-card rounded-3xl p-6 h-fit">
+          <div class="text-center" id="memorialCard">
+            <div class="serif text-xl font-bold text-slate-900 mb-2">纪念卡片</div>
+            <div class="text-sm text-slate-500 mb-5">扫码进入本页</div>
+            <canvas id="qrCanvas" class="mx-auto rounded-xl bg-white p-2"></canvas>
+            <div class="mt-5 serif font-bold text-slate-800" id="cardName">纪念人物姓名</div>
+            <div class="text-xs text-slate-500 mt-1" id="cardDate">1935.07.12 — 2026.05.04</div>
+          </div>
+          <div class="no-print mt-5 grid grid-cols-2 gap-2">
+            <button id="downloadQrBtn" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm transition"><i class="fa-solid fa-qrcode mr-1"></i>二维码</button>
+            <button id="downloadCardBtn" class="px-3 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-sm transition"><i class="fa-solid fa-download mr-1"></i>卡片</button>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- 生平 -->
+    <section id="life" class="max-w-6xl mx-auto mt-8 glass rounded-[2rem] p-7 md:p-10 fade-up">
+      <h2 class="section-title text-2xl md:text-3xl mb-8"><i class="fa-solid fa-book-open-reader text-teal-600"></i>人物生平</h2>
+      <div class="grid lg:grid-cols-[0.92fr_1.08fr] gap-8 items-start">
+        <div class="soft-card rounded-3xl overflow-hidden">
+          <img id="lifePhoto" src="assets/photo.jpg" alt="人物生平照片" class="w-full aspect-[5/4] object-cover bg-slate-100" onerror="this.src='https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=900&q=80'" />
+          <div class="p-6">
+            <div class="serif text-2xl font-black text-slate-900" id="lifeName">纪念人物姓名</div>
+            <div class="text-sm text-slate-500 mt-2" id="lifeIdentity">学术精神与人格风范，永远照亮后来者之路。</div>
+          </div>
+        </div>
+        <article id="bioText" class="serif text-lg leading-[2.05] text-slate-700 whitespace-pre-line"></article>
+      </div>
+    </section>
+
+    <!-- 年表 -->
+    <section id="timeline" class="max-w-6xl mx-auto mt-8 glass rounded-[2rem] p-7 md:p-10 fade-up">
+      <h2 class="section-title text-2xl md:text-3xl mb-8"><i class="fa-solid fa-timeline text-teal-600"></i>纪念年表</h2>
+      <div class="relative" id="timelineList">
+        <div class="timeline-line"></div>
+      </div>
+    </section>
+
+    <!-- 影像 -->
+    <section id="gallery" class="max-w-6xl mx-auto mt-8 glass rounded-[2rem] p-7 md:p-10 fade-up">
+      <h2 class="section-title text-2xl md:text-3xl mb-8"><i class="fa-solid fa-images text-teal-600"></i>纪念影像</h2>
+      <div id="galleryGrid" class="grid md:grid-cols-3 gap-5"></div>
+    </section>
+
+    <!-- 留言 -->
+    <section id="guestbook" class="max-w-6xl mx-auto mt-8 glass rounded-[2rem] p-7 md:p-10 fade-up">
+      <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8">
+        <h2 class="section-title text-2xl md:text-3xl flex-1"><i class="fa-solid fa-book-bookmark text-teal-600"></i>追思留言</h2>
+        <p class="text-sm text-slate-500 max-w-xl">留言会保存在当前浏览器中。若要让所有访问者共同看到留言，需要后续接入 GitHub Issues、LeanCloud、Firebase、Supabase 等公共留言系统。</p>
+      </div>
+
+      <div class="grid lg:grid-cols-[0.88fr_1.12fr] gap-7">
+        <form id="messageForm" class="soft-card rounded-3xl p-6 no-print">
+          <label class="block text-sm font-bold text-slate-700 mb-2">您的姓名</label>
+          <input id="visitorName" class="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-4 focus:ring-teal-100 focus:border-teal-500 bg-white/80" placeholder="请填写姓名" />
+
+          <label class="block text-sm font-bold text-slate-700 mt-5 mb-2">缅怀寄语</label>
+          <textarea id="visitorMessage" rows="7" class="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-4 focus:ring-teal-100 focus:border-teal-500 bg-white/80 resize-y" placeholder="写下您的追思、感谢与怀念……"></textarea>
+
+          <div class="mt-5 flex flex-wrap gap-3">
+            <button class="px-5 py-3 rounded-full bg-teal-700 hover:bg-teal-800 text-white transition" type="submit"><i class="fa-solid fa-paper-plane mr-2"></i>发表留言</button>
+            <button id="clearMessagesBtn" class="px-5 py-3 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 transition" type="button"><i class="fa-solid fa-trash-can mr-2"></i>清空本机留言</button>
+          </div>
+        </form>
+
+        <div class="soft-card rounded-3xl p-6">
+          <div class="flex items-center justify-between mb-4">
+            <div class="font-bold text-slate-800">留言墙</div>
+            <button id="exportMessagesBtn" class="no-print text-sm text-teal-700 hover:text-teal-900"><i class="fa-solid fa-file-arrow-down mr-1"></i>导出</button>
+          </div>
+          <div id="messageList" class="space-y-4 max-h-[520px] overflow-y-auto pr-1 scrollbar-thin"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 图片弹窗 -->
+  <div id="imageModal" class="hidden fixed inset-0 z-50 modal-backdrop p-4 items-center justify-center no-print">
+    <div class="max-w-5xl w-full">
+      <button id="closeModalBtn" class="mb-4 ml-auto block w-11 h-11 rounded-full bg-white/15 hover:bg-white/25 text-white transition"><i class="fa-solid fa-xmark"></i></button>
+      <img id="modalImage" src="" alt="放大图片" class="w-full max-h-[78vh] object-contain rounded-3xl shadow-2xl bg-white/10" />
+      <div id="modalCaption" class="text-white text-center mt-4 serif text-lg"></div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="no-print fixed left-1/2 -translate-x-1/2 bottom-8 z-[60] hidden px-5 py-3 rounded-full bg-slate-950/88 text-white shadow-2xl text-sm"></div>
+
+  <script>
+    const STORAGE = {
+      flowers: 'interactive_memorial_flowers_v1',
+      candles: 'interactive_memorial_candles_v1',
+      messages: 'interactive_memorial_messages_v1'
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    function showToast(text) {
+      const toast = $('toast');
+      toast.textContent = text;
+      toast.classList.remove('hidden');
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => toast.classList.add('hidden'), 2200);
+    }
+
+    function getNumber(key) {
+      const value = localStorage.getItem(key);
+      return value ? Number(value) : 0;
+    }
+
+    function setNumber(key, value) {
+      localStorage.setItem(key, String(value));
+    }
+
+    function getMessages() {
+      const saved = localStorage.getItem(STORAGE.messages);
+      if (saved) {
+        try { return JSON.parse(saved); } catch (_) { return CONFIG.defaultMessages || []; }
+      }
+      return CONFIG.defaultMessages || [];
+    }
+
+    function saveMessages(messages) {
+      localStorage.setItem(STORAGE.messages, JSON.stringify(messages));
+    }
+
+    function formatTime(date = new Date()) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, '0');
+      const d = String(date.getDate()).padStart(2, '0');
+      const h = String(date.getHours()).padStart(2, '0');
+      const min = String(date.getMinutes()).padStart(2, '0');
+      return `${y}-${m}-${d} ${h}:${min}`;
+    }
+
+    function updateCounts() {
+      const flowers = getNumber(STORAGE.flowers);
+      const candles = getNumber(STORAGE.candles);
+      $('flowerCount').textContent = flowers;
+      $('flowerCountCard').textContent = flowers;
+      $('candleCount').textContent = candles;
+      $('candleCountCard').textContent = candles;
+      $('messageCountCard').textContent = getMessages().length;
+    }
+
+    function createPetalBurst() {
+      const petals = ['🌼', '🌿', '🤍', '🌸'];
+      for (let i = 0; i < 18; i++) {
+        const petal = document.createElement('div');
+        petal.className = 'float-petal text-2xl';
+        petal.textContent = petals[Math.floor(Math.random() * petals.length)];
+        petal.style.left = Math.random() * 100 + 'vw';
+        petal.style.setProperty('--drift', (Math.random() * 240 - 120) + 'px');
+        petal.style.animationDuration = (4.8 + Math.random() * 3.8) + 's';
+        petal.style.animationDelay = (Math.random() * 0.8) + 's';
+        document.body.appendChild(petal);
+        setTimeout(() => petal.remove(), 9000);
+      }
+    }
+
+    function renderIdentity() {
+      const box = $('identityList');
+      box.innerHTML = '';
+      CONFIG.person.identity.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'flex items-center gap-3';
+        div.innerHTML = `<span class="w-7 h-7 rounded-full bg-teal-50 text-teal-700 flex items-center justify-center"><i class="fa-solid fa-check text-xs"></i></span><span>${item}</span>`;
+        box.appendChild(div);
+      });
+    }
+
+    function renderTimeline() {
+      const container = $('timelineList');
+      container.innerHTML = '<div class="timeline-line"></div>';
+      CONFIG.timeline.forEach((item, index) => {
+        const row = document.createElement('div');
+        row.className = 'relative pl-14 pb-8 last:pb-0';
+        row.innerHTML = `
+          <div class="absolute left-0 top-1 w-9 h-9 rounded-full bg-teal-700 text-white flex items-center justify-center shadow-lg shadow-teal-900/20 z-10">
+            <i class="fa-solid fa-star text-xs"></i>
+          </div>
+          <div class="soft-card rounded-3xl p-5 hover:-translate-y-1 transition duration-300">
+            <div class="flex flex-col md:flex-row md:items-baseline md:justify-between gap-1 mb-2">
+              <div class="serif text-xl font-black text-slate-900">${item.title}</div>
+              <div class="text-sm font-bold text-teal-700">${item.year}</div>
+            </div>
+            <p class="text-slate-600 leading-7">${item.text}</p>
+          </div>`;
+        container.appendChild(row);
+      });
+    }
+
+    function renderGallery() {
+      const grid = $('galleryGrid');
+      grid.innerHTML = '';
+      CONFIG.gallery.forEach((item, index) => {
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = 'group soft-card rounded-3xl overflow-hidden text-left hover:-translate-y-1 transition duration-300 no-print';
+        card.innerHTML = `
+          <div class="aspect-[4/3] overflow-hidden bg-slate-100">
+            <img src="${item.src}" alt="${item.caption}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="this.src='https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=900&q=80'">
+          </div>
+          <div class="p-4 flex items-center justify-between">
+            <span class="serif font-bold text-slate-800">${item.caption}</span>
+            <i class="fa-solid fa-up-right-and-down-left-from-center text-teal-700 opacity-70"></i>
+          </div>`;
+        card.addEventListener('click', () => openImageModal(item.src, item.caption));
+        grid.appendChild(card);
+      });
+    }
+
+    function openImageModal(src, caption) {
+      $('modalImage').src = src;
+      $('modalCaption').textContent = caption;
+      $('imageModal').classList.remove('hidden');
+      $('imageModal').classList.add('flex');
+    }
+
+    function closeImageModal() {
+      $('imageModal').classList.add('hidden');
+      $('imageModal').classList.remove('flex');
+    }
+
+    function renderMessages() {
+      const list = $('messageList');
+      const messages = getMessages();
+      list.innerHTML = '';
+      messages.slice().reverse().forEach(msg => {
+        const item = document.createElement('article');
+        item.className = 'rounded-3xl bg-white/75 border border-slate-100 p-5';
+        const name = document.createElement('div');
+        name.className = 'font-bold text-slate-900 mb-2 flex items-center gap-2';
+        name.innerHTML = '<i class="fa-solid fa-user-pen text-teal-600"></i>';
+        name.appendChild(document.createTextNode(msg.name));
+        const text = document.createElement('p');
+        text.className = 'serif text-slate-700 leading-8 whitespace-pre-wrap';
+        text.textContent = msg.text;
+        const time = document.createElement('div');
+        time.className = 'text-xs text-slate-400 mt-3';
+        time.textContent = msg.time;
+        item.appendChild(name);
+        item.appendChild(text);
+        item.appendChild(time);
+        list.appendChild(item);
+      });
+      updateCounts();
+    }
+
+    function generateQR() {
+      const canvas = $('qrCanvas');
+      QRCode.toCanvas(canvas, window.location.href, {
+        width: 190,
+        margin: 1,
+        color: { dark: '#172033', light: '#ffffff' }
+      }, err => { if (err) console.error(err); });
+    }
+
+    function downloadCanvas(canvas, filename) {
+      const link = document.createElement('a');
+      link.download = filename;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    async function downloadCard() {
+      const card = $('memorialCard');
+      const canvas = await html2canvas(card, { backgroundColor: '#ffffff', scale: 2 });
+      downloadCanvas(canvas, 'memorial-card.png');
+    }
+
+    function exportMessages() {
+      const messages = getMessages();
+      const text = messages.map(m => `[${m.time}] ${m.name}\n${m.text}`).join('\n\n---\n\n');
+      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'memorial-messages.txt';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    async function sharePage() {
+      const data = { title: document.title, text: CONFIG.heroQuote, url: window.location.href };
+      if (navigator.share) {
+        try { await navigator.share(data); return; } catch (_) {}
+      }
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        showToast('页面链接已复制');
+      } catch (_) {
+        showToast('请复制浏览器地址栏中的链接');
+      }
+    }
+
+    function initMusic() {
+      const audio = $('bgm');
+      const btn = $('musicBtn');
+      audio.src = CONFIG.person.music;
+      audio.volume = 0.62;
+
+      btn.addEventListener('click', async () => {
+        try {
+          if (audio.paused) {
+            await audio.play();
+            btn.innerHTML = '<i class="fa-solid fa-pause mr-1"></i><span class="hidden sm:inline">暂停</span>';
+          } else {
+            audio.pause();
+            btn.innerHTML = '<i class="fa-solid fa-music mr-1"></i><span class="hidden sm:inline">音乐</span>';
+          }
+        } catch (e) {
+          showToast('浏览器限制自动播放，请再次点击音乐按钮');
+        }
+      });
+
+      // 用户第一次点击页面时尝试播放，兼容多数浏览器限制。
+      function firstGesturePlay() {
+        if (audio.paused) {
+          audio.play().then(() => {
+            btn.innerHTML = '<i class="fa-solid fa-pause mr-1"></i><span class="hidden sm:inline">暂停</span>';
+          }).catch(() => {});
+        }
+        document.removeEventListener('click', firstGesturePlay);
+        document.removeEventListener('touchstart', firstGesturePlay);
+      }
+      document.addEventListener('click', firstGesturePlay);
+      document.addEventListener('touchstart', firstGesturePlay);
+    }
+
+    function initNavSpy() {
+      const links = [...document.querySelectorAll('.nav-link')];
+      const sections = links.map(link => document.querySelector(link.getAttribute('href'))).filter(Boolean);
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            links.forEach(link => link.classList.toggle('active', link.getAttribute('href') === '#' + entry.target.id));
+          }
+        });
+      }, { rootMargin: '-35% 0px -55% 0px', threshold: 0.01 });
+      sections.forEach(section => observer.observe(section));
+    }
+
+    function initReveal() {
+      const items = document.querySelectorAll('.fade-up');
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) entry.target.classList.add('show');
+        });
+      }, { threshold: 0.1 });
+      items.forEach(item => observer.observe(item));
+    }
+
+    function applyConfig() {
+      document.title = `${CONFIG.person.name} | 线上纪念馆`;
+      document.body.style.backgroundImage = `linear-gradient(120deg, rgba(8, 47, 73, 0.68), rgba(15, 23, 42, 0.56)), url('${CONFIG.person.background}')`;
+
+      $('heroTitle').textContent = CONFIG.person.title;
+      $('personName').textContent = CONFIG.person.name;
+      $('englishName').textContent = CONFIG.person.englishName;
+      $('dates').textContent = CONFIG.person.dates;
+      $('heroQuote').textContent = CONFIG.heroQuote;
+      $('mainPhoto').src = CONFIG.person.photo;
+      $('lifePhoto').src = CONFIG.person.photo;
+      $('lifeName').textContent = CONFIG.person.name;
+      $('lifeIdentity').textContent = CONFIG.person.identity.join(' · ');
+      $('memorialText').textContent = CONFIG.memorialText;
+      $('bioText').textContent = CONFIG.bio;
+      $('cardName').textContent = CONFIG.person.name;
+      $('cardDate').textContent = CONFIG.person.dates;
+
+      renderIdentity();
+      renderTimeline();
+      renderGallery();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      applyConfig();
+      initMusic();
+      initNavSpy();
+      initReveal();
+      generateQR();
+      updateCounts();
+      renderMessages();
+
+      $('flowerBtn').addEventListener('click', () => {
+        setNumber(STORAGE.flowers, getNumber(STORAGE.flowers) + 1);
+        updateCounts();
+        createPetalBurst();
+        showToast('已献上一束花，寄托追思');
+      });
+
+      $('candleBtn').addEventListener('click', () => {
+        setNumber(STORAGE.candles, getNumber(STORAGE.candles) + 1);
+        updateCounts();
+        showToast('已点燃一支烛，愿其安息');
+      });
+
+      $('messageForm').addEventListener('submit', (event) => {
+        event.preventDefault();
+        const name = $('visitorName').value.trim();
+        const text = $('visitorMessage').value.trim();
+        if (!name || !text) {
+          showToast('请填写姓名和留言内容');
+          return;
+        }
+        const messages = getMessages();
+        messages.push({ name, text, time: formatTime() });
+        saveMessages(messages);
+        $('visitorMessage').value = '';
+        renderMessages();
+        showToast('留言已保存到当前浏览器');
+      });
+
+      $('clearMessagesBtn').addEventListener('click', () => {
+        if (confirm('确定清空当前浏览器中保存的留言吗？')) {
+          localStorage.removeItem(STORAGE.messages);
+          renderMessages();
+          showToast('本机留言已清空');
+        }
+      });
+
+      $('exportMessagesBtn').addEventListener('click', exportMessages);
+      $('downloadQrBtn').addEventListener('click', () => downloadCanvas($('qrCanvas'), 'memorial-qrcode.png'));
+      $('downloadCardBtn').addEventListener('click', downloadCard);
+      $('shareBtn').addEventListener('click', sharePage);
+      $('closeModalBtn').addEventListener('click', closeImageModal);
+      $('imageModal').addEventListener('click', (event) => { if (event.target === $('imageModal')) closeImageModal(); });
+      document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeImageModal(); });
+    });
+  </script>
 </body>
 </html>
