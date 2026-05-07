@@ -3,787 +3,2629 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>线上纪念馆 | Memorial Hall</title>
 
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>彭聃龄先生线上缅怀室</title>
+  <meta name="description" content="彭聃龄先生线上缅怀室：浏览生平事迹、观看追忆影像，发表图文及文档留言，寄托哀思。" />
 
-  <!-- Font Awesome -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
-
-  <!-- QRCode -->
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
-
-  <!-- html2canvas: 用于保存纪念卡片 -->
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700;900&family=Merriweather:wght@300;400;700;900&display=swap');
-
     :root {
-      --ink: #172033;
-      --muted: #64748b;
-      --accent: #0f766e;
-      --accent-2: #1e3a8a;
-      --paper: rgba(255, 255, 255, 0.88);
-      --paper-solid: #ffffff;
-      --line: rgba(148, 163, 184, 0.28);
-      --gold: #b68a36;
-      --shadow: 0 24px 80px rgba(15, 23, 42, 0.20);
+      --bg-1: #090a0d;
+      --bg-2: #171a20;
+      --line: rgba(255, 255, 255, 0.16);
+      --line-soft: rgba(255, 255, 255, 0.09);
+      --text: #f6f2e8;
+      --muted: rgba(246, 242, 232, 0.72);
+      --soft: rgba(246, 242, 232, 0.56);
+      --gold: #d9bc7d;
+      --gold-2: #f1d69a;
+      --danger: #f3b8ad;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.36);
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-    html { scroll-behavior: smooth; }
+    html {
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
 
     body {
-      margin: 0;
       min-height: 100vh;
-      color: var(--ink);
-      font-family: 'Noto Sans SC', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: var(--text);
+      font-family: "Noto Serif SC", "Songti SC", "STSong", "Microsoft YaHei", serif;
       background:
-        linear-gradient(120deg, rgba(8, 47, 73, 0.68), rgba(15, 23, 42, 0.56)),
-        url('assets/background.jpg');
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
+        radial-gradient(circle at 15% 0%, rgba(217,188,125,0.12), transparent 28%),
+        radial-gradient(circle at 90% 8%, rgba(255,255,255,0.06), transparent 30%),
+        linear-gradient(145deg, var(--bg-1), var(--bg-2) 52%, #0d0f13 100%);
       overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      position: relative;
     }
 
     body::before {
-      content: '';
+      content: "";
       position: fixed;
       inset: 0;
+      z-index: -3;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 44px 44px;
+      mask-image: linear-gradient(to bottom, black, transparent 95%);
       pointer-events: none;
-      background:
-        radial-gradient(circle at 12% 18%, rgba(255,255,255,0.16), transparent 28%),
-        radial-gradient(circle at 86% 10%, rgba(180, 83, 9, 0.12), transparent 22%),
-        radial-gradient(circle at 50% 100%, rgba(13, 148, 136, 0.14), transparent 28%);
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      background: linear-gradient(to bottom, rgba(0,0,0,.12), rgba(0,0,0,.56));
+      pointer-events: none;
+    }
+
+    .star-layer {
+      position: fixed;
+      inset: 0;
       z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
     }
 
-    .serif { font-family: 'Noto Serif SC', 'Merriweather', serif; }
-    .latin { font-family: 'Merriweather', serif; }
+    .star {
+      position: absolute;
+      width: 210px;
+      height: 3px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.55) 42%, rgba(255,248,226,1) 100%);
+      box-shadow:
+        0 0 10px rgba(255,255,255,.95),
+        0 0 22px rgba(241,214,154,.86),
+        0 0 42px rgba(217,188,125,.50);
+      opacity: 0;
+      transform: rotate(-32deg);
+      animation: starMove 8s linear infinite;
+    }
 
-    .glass {
-      background: var(--paper);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border: 1px solid rgba(255,255,255,0.62);
+    .star::after {
+      content: "";
+      position: absolute;
+      right: -2px;
+      top: 50%;
+      width: 10px;
+      height: 10px;
+      transform: translateY(-50%);
+      border-radius: 50%;
+      background: rgba(255,255,255,.98);
+      box-shadow:
+        0 0 16px rgba(255,255,255,.96),
+        0 0 26px rgba(241,214,154,.92),
+        0 0 42px rgba(217,188,125,.58);
+    }
+
+    .star-1 { top: 7%; left: 82%; animation-delay: 0s; animation-duration: 6.6s; }
+    .star-2 { top: 19%; left: 94%; animation-delay: 1.2s; animation-duration: 7.8s; }
+    .star-3 { top: 35%; left: 84%; animation-delay: 2.7s; animation-duration: 7.2s; }
+    .star-4 { top: 52%; left: 96%; animation-delay: 4.2s; animation-duration: 8.4s; }
+    .star-5 { top: 70%; left: 78%; animation-delay: 5.8s; animation-duration: 7.4s; }
+
+    @keyframes starMove {
+      0% { opacity: 0; transform: translate(0, 0) rotate(-32deg); }
+      8% { opacity: .96; }
+      38% { opacity: .96; }
+      100% { opacity: 0; transform: translate(-620px, 390px) rotate(-32deg); }
+    }
+
+    .page {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 16px 0 56px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .sticky-tribute {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      padding-top: 10px;
+      margin-bottom: 22px;
+    }
+
+    .tribute-shell {
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.13), rgba(255,255,255,.055)),
+        radial-gradient(circle at 15% 15%, rgba(217,188,125,.12), transparent 32%);
       box-shadow: var(--shadow);
+      overflow: hidden;
+      backdrop-filter: blur(18px);
     }
 
-    .soft-card {
-      background: rgba(255,255,255,0.80);
-      border: 1px solid rgba(226, 232, 240, 0.75);
-      box-shadow: 0 14px 40px rgba(15, 23, 42, 0.08);
-    }
-
-    .section-title {
+    .tribute-topline {
       display: flex;
       align-items: center;
-      gap: 0.85rem;
-      font-family: 'Noto Serif SC', 'Merriweather', serif;
-      color: #14315f;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-    }
-
-    .section-title::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: linear-gradient(90deg, rgba(15, 118, 110, 0.35), transparent);
-    }
-
-    .nav-link {
+      justify-content: flex-start;
+      gap: 14px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--line-soft);
+      background: rgba(0,0,0,.18);
       position: relative;
-      color: rgba(255,255,255,0.84);
-      transition: 0.25s ease;
-    }
-    .nav-link:hover { color: white; transform: translateY(-1px); }
-    .nav-link.active { color: white; }
-    .nav-link.active::after {
-      content: '';
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: -9px;
-      height: 2px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.88);
+      z-index: 3;
     }
 
-    .float-petal {
-      position: fixed;
-      top: -40px;
-      z-index: 25;
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+      flex: 0 0 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      border: 1px solid rgba(217,188,125,.38);
+      color: var(--gold-2);
+      background: rgba(255,255,255,.06);
+      letter-spacing: .08em;
+    }
+
+    .brand-title {
+      min-width: 0;
+    }
+
+    .brand-title h1 {
+      font-size: clamp(17px, 2vw, 25px);
+      font-weight: 500;
+      color: #fff8ea;
+      letter-spacing: .06em;
+      line-height: 1.2;
+    }
+
+    .brand-title p {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: .16em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .tribute-main {
+      display: grid;
+      grid-template-columns: minmax(260px, .9fr) minmax(520px, 1.2fr) minmax(260px, .9fr);
+      gap: 18px;
+      padding: 16px;
+      align-items: stretch;
+    }
+
+    .bio-text-card,
+    .portrait-landscape {
+      border-radius: 24px;
+      background: rgba(0,0,0,.18);
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .bio-text-card {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      min-height: 300px;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(217,188,125,.10), transparent 34%),
+        linear-gradient(145deg, #020304, #07090c 68%, #020304);
+      box-shadow: inset 0 0 0 1px rgba(217,188,125,.10);
+    }
+
+    .bio-text-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 18px;
+      background: #000;
+      border: 1px solid rgba(217,188,125,.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 24px;
+    }
+
+    .bio-text-inner p {
+      color: rgba(255,255,255,.95);
+      font-size: 15px;
+      line-height: 2.15;
+      text-align: justify;
+      margin: 0;
+      word-break: break-word;
+    }
+
+    .portrait-landscape {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-height: 300px;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.34)),
+        rgba(0,0,0,.28);
+    }
+
+    .portrait-frame {
+      flex: 1;
+      min-height: 232px;
+      display: grid;
+      place-items: center;
+      background: rgba(0,0,0,.16);
+    }
+
+    .portrait-frame img {
+      width: 100%;
+      height: 100%;
+      max-height: 300px;
+      object-fit: contain;
+      object-position: center;
+      filter: grayscale(18%) contrast(1.02);
+      background: transparent;
+    }
+
+    .mourning-title {
+      padding: 13px 14px 15px;
+      text-align: center;
+      border-top: 1px solid var(--line-soft);
+      background: rgba(0,0,0,.22);
+    }
+
+    .mourning-title strong {
+      display: block;
+      font-weight: 500;
+      font-size: clamp(18px, 1.75vw, 24px);
+      letter-spacing: .04em;
+      color: #fff8ea;
+      line-height: 1.45;
+      word-break: keep-all;
+      overflow-wrap: normal;
+      line-break: strict;
+    }
+
+    @media (min-width: 981px) {
+      .mourning-title strong {
+        white-space: nowrap;
+      }
+    }
+
+    .setup-warning {
+      display: none;
+      margin-bottom: 18px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(241,183,173,.35);
+      background: rgba(241,183,173,.11);
+      color: #ffe0dc;
+      line-height: 1.75;
+      font-size: 14px;
+    }
+
+    .setup-warning.show {
+      display: block;
+    }
+
+    .section-block {
+      position: relative;
+      margin-top: 22px;
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      background: linear-gradient(145deg, rgba(255,255,255,.105), rgba(255,255,255,.045));
+      box-shadow: 0 18px 52px rgba(0,0,0,.20);
+      backdrop-filter: blur(16px);
+      overflow: hidden;
+    }
+
+    .section-block::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(217,188,125,.48), transparent);
+      opacity: .7;
       pointer-events: none;
-      animation: fall linear forwards;
-      filter: drop-shadow(0 8px 8px rgba(0,0,0,0.18));
     }
 
-    @keyframes fall {
-      0% { transform: translate3d(0, -60px, 0) rotate(0deg); opacity: 0; }
-      10% { opacity: 1; }
-      100% { transform: translate3d(var(--drift), 110vh, 0) rotate(520deg); opacity: 0; }
+    .section-header {
+      padding: 20px 22px 14px;
+      border-bottom: 1px solid var(--line-soft);
     }
 
-    .candle-flame {
-      width: 16px;
-      height: 24px;
-      border-radius: 999px 999px 999px 999px;
-      background: radial-gradient(circle at 50% 72%, #fff7ad 0 18%, #f59e0b 45%, #ef4444 82%, transparent 83%);
-      box-shadow: 0 0 18px rgba(245, 158, 11, 0.92), 0 0 34px rgba(251, 191, 36, 0.55);
-      animation: flicker 1.7s ease-in-out infinite;
-      transform-origin: bottom center;
+    .section-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
     }
 
-    @keyframes flicker {
-      0%, 100% { transform: scaleY(1) rotate(-2deg); opacity: 0.92; }
-      35% { transform: scaleY(1.12) rotate(2deg); opacity: 1; }
-      70% { transform: scaleY(0.92) rotate(-1deg); opacity: 0.88; }
+    .section-header h2,
+    .section-header h3 {
+      font-size: 21px;
+      font-weight: 500;
+      color: #fff8ea;
+      letter-spacing: .08em;
     }
 
-    .fade-up {
+    .memory-video-wrap {
+      padding: 18px;
+    }
+
+    .memory-video-frame {
+      position: relative;
+      overflow: hidden;
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at 18% 0%, rgba(217,188,125,.12), transparent 30%),
+        rgba(0,0,0,.30);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.09);
+    }
+
+    .memory-video {
+      display: block;
+      width: 100%;
+      max-height: 72vh;
+      aspect-ratio: 16 / 9;
+      object-fit: contain;
+      background: rgba(0,0,0,.55);
+    }
+
+    .comments-layout {
+      display: grid;
+      grid-template-columns: minmax(300px, .86fr) minmax(360px, 1.14fr);
+      gap: 20px;
+      align-items: start;
+      margin-top: 22px;
+    }
+
+    .form-body {
+      padding: 20px 22px 22px;
+    }
+
+    .form-row + .form-row {
+      margin-top: 16px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 14px;
+      letter-spacing: .06em;
+    }
+
+    input[type="text"],
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 18px;
+      background: rgba(0,0,0,.24);
+      color: var(--text);
+      padding: 13px 15px;
+      outline: none;
+      transition: .2s ease;
+      font-family: inherit;
+      font-size: 15px;
+    }
+
+    select {
+      color-scheme: dark;
+      cursor: pointer;
+    }
+
+    input[type="text"]:focus,
+    select:focus,
+    textarea:focus {
+      border-color: rgba(217,188,125,.68);
+      box-shadow: 0 0 0 4px rgba(217,188,125,.08);
+    }
+
+    textarea {
+      min-height: 170px;
+      resize: vertical;
+      line-height: 1.8;
+      white-space: pre-wrap;
+    }
+
+    .reply-target {
+      display: none;
+      margin-bottom: 12px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(217,188,125,.26);
+      background: rgba(217,188,125,.10);
+      color: #fff3d2;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .reply-target.show {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .mini-btn,
+    .submit-btn {
+      border: 1px solid rgba(217,188,125,.42);
+      color: #fff8e8;
+      background: linear-gradient(135deg, rgba(217,188,125,.25), rgba(255,255,255,.08));
+      min-height: 46px;
+      border-radius: 16px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: .22s ease;
+      font-family: inherit;
+      font-size: 15px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      user-select: none;
+      text-decoration: none;
+    }
+
+    .mini-btn {
+      min-height: 34px;
+      padding: 6px 10px;
+      font-size: 13px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+    }
+
+    .submit-btn {
+      width: 100%;
+      margin-top: 14px;
+      min-height: 52px;
+      background: linear-gradient(135deg, rgba(217,188,125,.32), rgba(217,188,125,.12));
+    }
+
+    .mini-btn:hover,
+    .submit-btn:hover,
+    .upload-icon-btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(217,188,125,.78);
+      box-shadow: 0 14px 36px rgba(0,0,0,.22), 0 0 28px rgba(217,188,125,.08);
+    }
+
+    .ghost-btn {
+      border-color: rgba(255,255,255,.18);
+      background: rgba(255,255,255,.055);
+      color: var(--muted);
+    }
+
+    .danger-btn {
+      border-color: rgba(241,183,173,.44) !important;
+      color: #ffe0dc !important;
+      background: rgba(241,183,173,.08) !important;
+    }
+
+    .loading {
+      opacity: .68;
+      pointer-events: none;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .upload-icons {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .upload-icon-btn {
+      width: 88px;
+      height: 76px;
+      margin: 0;
+      border: 1px solid rgba(217,188,125,.42);
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(217,188,125,.18), rgba(255,255,255,.06));
+      color: #fff8e8;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      cursor: pointer;
+      font-size: 13px;
+      letter-spacing: .04em;
+      transition: .22s ease;
+    }
+
+    .upload-icon {
+      font-size: 25px;
+      line-height: 1;
+    }
+
+    .file-info {
+      margin-top: 8px;
+      color: var(--soft);
+      font-size: 12px;
+      line-height: 1.7;
+      word-break: break-word;
+    }
+
+    .messages-panel {
+      min-height: 560px;
+    }
+
+    .record-count {
+      color: var(--soft);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .admin-bar {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .admin-bar-bottom {
+      padding: 0 16px 18px;
+      justify-content: flex-end;
+    }
+
+    .messages-list {
+      padding: 16px;
+    }
+
+    .empty-state {
+      padding: 48px 18px;
+      text-align: center;
+      color: var(--muted);
+      line-height: 1.9;
+      border: 1px dashed rgba(255,255,255,.16);
+      border-radius: 22px;
+      margin: 6px;
+    }
+
+    .comment-card {
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 22px;
+      background: rgba(0,0,0,.16);
+      padding: 15px;
+      margin-bottom: 12px;
+      animation: fadeIn .25s ease;
+    }
+
+    .reply-card {
+      margin-left: 34px;
+      background: rgba(255,255,255,.045);
+      border-left: 2px solid rgba(217,188,125,.28);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .comment-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
+      margin-bottom: 9px;
+    }
+
+    .visitor-name {
+      color: #fff8e8;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: .03em;
+    }
+
+    .relation-badge {
+      display: inline-flex;
+      align-items: center;
+      margin-left: 8px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(217,188,125,.28);
+      color: var(--gold-2);
+      background: rgba(217,188,125,.09);
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: .04em;
+      vertical-align: middle;
+    }
+
+    .time {
+      color: var(--soft);
+      font-size: 12px;
+      white-space: nowrap;
+      font-family: "Microsoft YaHei", sans-serif;
+    }
+
+    .edited-mark {
+      color: var(--soft);
+      font-size: 12px;
+      margin-left: 6px;
+    }
+
+    .comment-content {
+      color: rgba(255,255,255,.84);
+      line-height: 1.86;
+      font-size: 15px;
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+
+    .comment-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .attachments {
+      display: grid;
+      gap: 12px;
+      margin-top: 13px;
+    }
+
+    .image-gallery {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .thumb {
+      position: relative;
+      aspect-ratio: 4 / 3;
+      overflow: hidden;
+      border-radius: 15px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.22);
+      cursor: pointer;
+    }
+
+    .thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform .25s ease;
+    }
+
+    .thumb:hover img {
+      transform: scale(1.035);
+    }
+
+    .doc-list {
+      display: grid;
+      gap: 9px;
+    }
+
+    .doc-item {
+      display: grid;
+      grid-template-columns: 38px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 10px;
+      border-radius: 15px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+    }
+
+    .doc-icon {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      border: 1px solid rgba(217,188,125,.24);
+      background: rgba(217,188,125,.10);
+      color: var(--gold-2);
+      font-size: 15px;
+    }
+
+    .doc-name {
+      color: rgba(255,255,255,.86);
+      font-size: 14px;
+      line-height: 1.45;
+      word-break: break-word;
+    }
+
+    .doc-size {
+      margin-top: 2px;
+      color: var(--soft);
+      font-size: 12px;
+      font-family: "Microsoft YaHei", sans-serif;
+    }
+
+    .doc-actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 0 16px 18px;
+    }
+
+    .page-btn {
+      min-width: 36px;
+      height: 36px;
+      padding: 0 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      cursor: pointer;
+      font-family: inherit;
+      transition: .22s ease;
+    }
+
+    .page-btn.active {
+      border-color: var(--gold-2);
+      background: rgba(217,188,125,.24);
+      color: #fff8ea;
+    }
+
+    .page-btn:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translateX(-50%) translateY(20px);
+      z-index: 100;
+      width: min(560px, calc(100% - 32px));
+      padding: 13px 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(16,17,19,.9);
+      color: var(--text);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 18px 60px rgba(0,0,0,.34);
       opacity: 0;
-      transform: translateY(22px);
-      transition: opacity 0.8s ease, transform 0.8s ease;
-    }
-    .fade-up.show { opacity: 1; transform: translateY(0); }
-
-    .timeline-line {
-      position: absolute;
-      left: 17px;
-      top: 14px;
-      bottom: 12px;
-      width: 2px;
-      background: linear-gradient(#0d9488, rgba(13, 148, 136, 0.08));
+      pointer-events: none;
+      transition: .24s ease;
+      text-align: center;
+      line-height: 1.65;
+      font-size: 14px;
     }
 
-    .modal-backdrop {
-      background: rgba(15, 23, 42, 0.72);
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .preview-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      padding: 24px;
+      background: rgba(0,0,0,.72);
       backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
     }
 
-    .scrollbar-thin::-webkit-scrollbar { width: 8px; }
-    .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(15, 118, 110, 0.25); border-radius: 999px; }
-    .scrollbar-thin::-webkit-scrollbar-track { background: rgba(226, 232, 240, 0.5); }
+    .preview-modal.show {
+      display: grid;
+      place-items: center;
+    }
 
-    @media print {
-      body { background: white !important; padding: 0; }
-      .no-print { display: none !important; }
-      .glass, .soft-card { box-shadow: none !important; backdrop-filter: none !important; }
-      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    .preview-card {
+      width: min(1060px, 100%);
+      max-height: min(88vh, 820px);
+      display: flex;
+      flex-direction: column;
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 24px;
+      background: rgba(16,17,19,.96);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .preview-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line-soft);
+    }
+
+    .preview-title {
+      font-size: 15px;
+      color: #fff8ea;
+      line-height: 1.4;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .preview-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .preview-body {
+      min-height: 420px;
+      height: 72vh;
+      max-height: 700px;
+      display: grid;
+      place-items: center;
+      background: rgba(0,0,0,.36);
+    }
+
+    .preview-body img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .preview-body iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #fff;
+    }
+
+    .footer {
+      text-align: center;
+      color: var(--soft);
+      font-size: 13px;
+      line-height: 1.9;
+      margin-top: 34px;
+      letter-spacing: .06em;
+    }
+
+    @media (max-width: 980px) {
+      .page {
+        width: min(100% - 26px, 1180px);
+      }
+
+      .sticky-tribute {
+        position: relative;
+        top: auto;
+        z-index: 1;
+      }
+
+      .tribute-main {
+        grid-template-columns: 1fr;
+      }
+
+      .portrait-landscape {
+        order: -1;
+        min-height: auto;
+      }
+
+      .bio-text-card {
+        min-height: auto;
+      }
+
+      .bio-text-inner {
+        min-height: 150px;
+      }
+
+      .portrait-frame {
+        min-height: 240px;
+      }
+
+      .comments-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      body {
+        background:
+          radial-gradient(circle at 20% 5%, rgba(217,188,125,0.11), transparent 30%),
+          radial-gradient(circle at 86% 0%, rgba(255,255,255,0.045), transparent 24%),
+          linear-gradient(160deg, #0c0e11, #171a20 60%, #0a0c0f 100%);
+      }
+
+      .page {
+        width: calc(100% - 12px);
+        padding: 6px 0 38px;
+      }
+
+      .sticky-tribute {
+        padding-top: 6px;
+        margin-bottom: 14px;
+      }
+
+      .tribute-shell {
+        overflow: visible;
+        border-radius: 22px;
+      }
+
+      .tribute-topline {
+        position: sticky;
+        top: 0;
+        z-index: 60;
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-start;
+        gap: 8px;
+        padding: 10px 12px;
+        border-radius: 22px 22px 0 0;
+        background: rgba(22, 23, 27, 0.92);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+      }
+
+      .brand {
+        min-width: 0;
+        gap: 8px;
+        align-items: flex-start;
+      }
+
+      .brand-mark {
+        width: 30px;
+        height: 30px;
+        flex-basis: 30px;
+        font-size: 13px;
+      }
+
+      .brand-title h1 {
+        font-size: clamp(16px, 5vw, 20px);
+        line-height: 1.25;
+        letter-spacing: .02em;
+        white-space: normal;
+        word-break: break-word;
+      }
+
+      .brand-title p {
+        font-size: 11px;
+        line-height: 1.35;
+        letter-spacing: .06em;
+        white-space: normal;
+        overflow: visible;
+        text-overflow: unset;
+      }
+
+      .star {
+        width: 150px;
+        height: 3px;
+      }
+
+      .section-block {
+        border-radius: 22px;
+      }
+
+      .tribute-main {
+        padding: 8px;
+        gap: 8px;
+      }
+
+      .bio-text-card,
+      .portrait-landscape {
+        border-radius: 18px;
+      }
+
+      .bio-text-card {
+        padding: 8px;
+      }
+
+      .bio-text-inner {
+        border-radius: 14px;
+        padding: 14px 13px;
+        min-height: auto;
+      }
+
+      .bio-text-inner p {
+        font-size: clamp(12px, 3.7vw, 14px);
+        line-height: 1.85;
+        letter-spacing: 0;
+      }
+
+      .portrait-frame {
+        min-height: 0;
+        aspect-ratio: 16 / 9;
+      }
+
+      .portrait-frame img {
+        max-height: none;
+      }
+
+      .mourning-title {
+        padding: 10px 8px 11px;
+      }
+
+      .mourning-title strong {
+        font-size: clamp(15px, 4.8vw, 18px);
+        line-height: 1.45;
+        letter-spacing: .02em;
+        white-space: normal;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+        line-break: auto;
+      }
+
+      .section-block {
+        margin-top: 14px;
+      }
+
+      .section-header {
+        padding: 16px 16px 12px;
+      }
+
+      .section-header h2,
+      .section-header h3 {
+        font-size: clamp(17px, 5vw, 20px);
+        letter-spacing: .04em;
+      }
+
+      label {
+        font-size: 13px;
+      }
+
+      input[type="text"],
+      select,
+      textarea {
+        border-radius: 15px;
+        padding: 12px 13px;
+        font-size: 14px;
+      }
+
+      textarea {
+        min-height: 132px;
+      }
+
+      .memory-video-wrap {
+        padding: 12px;
+      }
+
+      .memory-video-frame {
+        border-radius: 18px;
+      }
+
+      .memory-video {
+        aspect-ratio: 16 / 9;
+        max-height: 56vh;
+      }
+
+      .comments-layout {
+        gap: 14px;
+        margin-top: 14px;
+      }
+
+      .form-body {
+        padding: 16px;
+      }
+
+      .upload-icons {
+        gap: 10px;
+      }
+
+      .upload-icon-btn {
+        width: 78px;
+        height: 68px;
+        border-radius: 16px;
+        font-size: 12px;
+      }
+
+      .upload-icon {
+        font-size: 22px;
+      }
+
+      .messages-list {
+        padding: 12px;
+      }
+
+      .comment-card {
+        border-radius: 18px;
+        padding: 12px;
+      }
+
+      .reply-card {
+        margin-left: 14px !important;
+      }
+
+      .comment-meta {
+        display: block;
+      }
+
+      .comment-content {
+        font-size: 14px;
+        line-height: 1.75;
+      }
+
+      .visitor-name {
+        font-size: 15px;
+      }
+
+      .time {
+        display: block;
+        margin-top: 4px;
+        font-size: 11px;
+      }
+
+      .image-gallery {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .doc-item {
+        grid-template-columns: 34px 1fr;
+      }
+
+      .doc-actions {
+        grid-column: 1 / -1;
+        justify-content: flex-start;
+      }
+
+      .admin-bar-bottom {
+        padding: 0 12px 14px;
+        justify-content: flex-end;
+      }
+
+      .preview-modal {
+        padding: 12px;
+      }
+
+      .preview-card {
+        border-radius: 18px;
+      }
+
+      .preview-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .preview-actions {
+        width: 100%;
+      }
+
+      .preview-actions .mini-btn {
+        flex: 1;
+      }
+
+      .preview-body {
+        min-height: 300px;
+        height: 66vh;
+      }
+
+      .toast {
+        bottom: 18px;
+        width: min(92vw, 560px);
+        border-radius: 15px;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .brand-title h1 {
+        font-size: 16px;
+      }
+
+      .mourning-title strong {
+        font-size: 15px;
+        letter-spacing: 0;
+      }
+
+      .bio-text-inner p {
+        font-size: 12px;
+        line-height: 1.75;
+      }
+
+      .section-header {
+        padding: 14px 14px 10px;
+      }
+
+      .form-body {
+        padding: 14px;
+      }
     }
   </style>
 </head>
 
 <body>
-  <!-- =========================================================
-       只需要替换这里：CONFIG 配置区
-       1. assets/photo.jpg：人物照片
-       2. assets/background.jpg：背景图
-       3. assets/music.mp3：纯音乐音频
-       4. person、bio、memorialText、timeline 等文案
-       ========================================================= -->
-  <script>
-    const CONFIG = {
-      person: {
-        name: '纪念人物姓名',
-        englishName: 'In Loving Memory',
-        title: '线上纪念馆',
-        dates: '1935.07.12 — 2026.05.04',
-        identity: [
-          '中国著名心理学家',
-          '认知心理学与认知神经科学重要先驱',
-          '北京师范大学资深教授'
-        ],
-        photo: 'assets/photo.jpg',
-        background: 'assets/background.jpg',
-        music: 'assets/music.mp3'
-      },
+  <div class="star-layer" aria-hidden="true">
+    <span class="star star-1"></span>
+    <span class="star star-2"></span>
+    <span class="star star-3"></span>
+    <span class="star star-4"></span>
+    <span class="star star-5"></span>
+  </div>
 
-      heroQuote: '先生虽已远去，其学术精神与人格风范，仍将照亮后来者之路。',
+  <div class="page">
+    <section class="sticky-tribute" aria-label="顶部展示区">
+      <div class="tribute-shell">
+        <div class="tribute-topline">
+          <div class="brand">
+            <div class="brand-mark">悼</div>
+            <div class="brand-title">
+              <h1>彭聃龄先生线上缅怀室</h1>
+              <p>沉痛哀悼 · 深切缅怀</p>
+            </div>
+          </div>
+        </div>
 
-      memorialText: `先生一生笃学，躬耕杏坛六十余载。\n作为我国认知心理学、心理语言学与认知神经科学的重要先驱，先生以严谨的学术追求、宽厚的人格风范和对后辈学人的深切关怀，影响了一代又一代学人。\n\n治学严谨，润物无声；心怀家国，风范长存。\n愿先生安息，风范永存，学术长青。`,
+        <div class="tribute-main">
+          <aside class="bio-text-card" aria-label="生平事迹一">
+            <div class="bio-text-inner">
+              <p>
+                彭聃龄先生1935年出生于湖南长沙，1958年毕业于北京师范大学教育系学校教育专业，同年留校任教。先生从教六十余载，始终忠诚党的教育事业，矢志心理学学科建设，潜心育人，笃志治学，将毕生心血奉献给中国心理学事业。
+              </p>
+            </div>
+          </aside>
 
-      bio: `这里可以放人物生平简介。建议分为三层：第一层写其学术身份与主要贡献；第二层写其教学、育人和学科建设贡献；第三层写其人格风范与后辈影响。\n\n你后面只需要把这一段替换为正式生平文案即可。`,
+          <div class="portrait-landscape">
+            <div class="portrait-frame">
+              <img id="portraitImage" src="./assets/2.jpg" alt="彭聃龄先生遗照" />
+            </div>
+            <div class="mourning-title">
+              <strong>沉痛哀悼及深切缅怀彭聃龄先生</strong>
+            </div>
+          </div>
 
-      timeline: [
-        { year: '1935', title: '出生', text: '这里填写重要人生节点。' },
-        { year: '长期', title: '躬耕杏坛', text: '这里填写教学、科研与育人经历。' },
-        { year: '贡献', title: '学术传承', text: '这里填写代表性成果、学术影响与学科贡献。' },
-        { year: '今日', title: '风范长存', text: '这里填写后辈追思与纪念。' }
-      ],
-
-      gallery: [
-        { src: 'assets/photo.jpg', caption: '纪念照片' },
-        { src: 'assets/photo-2.jpg', caption: '教学与学术瞬间' },
-        { src: 'assets/photo-3.jpg', caption: '与师友同行' }
-      ],
-
-      defaultMessages: [
-        { name: '纪念馆', text: '愿先生安息，风范永存，学术长青。', time: '永久纪念' }
-      ]
-    };
-  </script>
-
-  <!-- 音乐 -->
-  <audio id="bgm" loop preload="auto"></audio>
-
-  <!-- 顶部导航 -->
-  <nav class="no-print fixed top-0 left-0 right-0 z-40 bg-slate-950/45 backdrop-blur-xl border-b border-white/10">
-    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-      <a href="#top" class="flex items-center gap-3 text-white">
-        <span class="w-9 h-9 rounded-full bg-white/15 border border-white/20 flex items-center justify-center">
-          <i class="fa-solid fa-dove text-white"></i>
-        </span>
-        <span class="serif font-bold tracking-widest text-sm md:text-base">线上纪念馆</span>
-      </a>
-      <div class="hidden md:flex items-center gap-8 text-sm">
-        <a class="nav-link" href="#memorial">纪念文</a>
-        <a class="nav-link" href="#life">生平</a>
-        <a class="nav-link" href="#timeline">年表</a>
-        <a class="nav-link" href="#gallery">影像</a>
-        <a class="nav-link" href="#guestbook">留言</a>
+          <aside class="bio-text-card" aria-label="生平事迹二">
+            <div class="bio-text-inner">
+              <p>
+                彭聃龄先生学问高深而不矜，为人谦和而不争，品格高洁而宽厚。先生潜心笃行，淡泊名利，严谨治学，以诚待人，深受学生、同事和朋友的敬重与爱戴。
+              </p>
+            </div>
+          </aside>
+        </div>
       </div>
-      <div class="flex items-center gap-2">
-        <button id="musicBtn" class="px-3 py-2 rounded-full bg-white/12 hover:bg-white/20 text-white text-sm transition" title="播放/暂停音乐">
-          <i class="fa-solid fa-music mr-1"></i><span class="hidden sm:inline">音乐</span>
-        </button>
-        <button id="shareBtn" class="px-3 py-2 rounded-full bg-white/12 hover:bg-white/20 text-white text-sm transition" title="分享页面">
-          <i class="fa-solid fa-share-nodes mr-1"></i><span class="hidden sm:inline">分享</span>
-        </button>
-      </div>
+    </section>
+
+    <div class="setup-warning" id="setupWarning">
+      当前 Supabase 表结构或权限可能尚未完成。若留言、附件或回复无法保存，请检查 memorial_comments 数据表、Storage bucket 和 RLS 权限。
     </div>
-  </nav>
 
-  <main id="top" class="relative z-10 pt-24 pb-16 px-4">
-    <!-- Hero -->
-    <section class="max-w-6xl mx-auto glass rounded-[2rem] overflow-hidden fade-up">
-      <div class="grid lg:grid-cols-[1.08fr_0.92fr] min-h-[620px]">
-        <div class="p-7 md:p-12 lg:p-14 flex flex-col justify-between">
-          <div>
-            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-teal-50 text-teal-800 border border-teal-100 text-sm font-bold mb-8">
-              <i class="fa-solid fa-leaf"></i>
-              <span id="heroTitle">线上纪念馆</span>
+    <section class="section-block" aria-label="追忆影像视频播放模块">
+      <div class="section-header">
+        <h2>追忆影像</h2>
+      </div>
+
+      <div class="memory-video-wrap">
+        <div class="memory-video-frame">
+          <video
+            id="memoryVideo"
+            class="memory-video"
+            src="./assets/追忆影像.mp4"
+            poster="./assets/2.jpg"
+            preload="auto"
+            autoplay
+            playsinline
+            webkit-playsinline
+            controls>
+            您的浏览器不支持视频播放，请下载或更换浏览器查看。
+          </video>
+        </div>
+      </div>
+    </section>
+
+    <main class="comments-layout" aria-label="互动评论区">
+      <section class="section-block" aria-label="留言输入区">
+        <div class="section-header">
+          <h3>发表缅怀留言</h3>
+        </div>
+
+        <div class="form-body">
+          <div class="form-row">
+            <label for="visitorName">您的姓名 <span aria-hidden="true">*</span></label>
+            <input id="visitorName" type="text" placeholder="请填写姓名" autocomplete="name" />
+          </div>
+
+          <div class="form-row">
+            <label for="visitorRelation">您与先生的关系 <span aria-hidden="true">*</span></label>
+            <select id="visitorRelation">
+              <option value="">请选择与先生的关系</option>
+              <option value="亲属">亲属</option>
+              <option value="朋友">朋友</option>
+              <option value="同辈">同辈</option>
+              <option value="同事">同事</option>
+              <option value="师生">师生</option>
+              <option value="其他">其他</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="reply-target" id="replyTarget">
+              <span id="replyText"></span>
+              <button class="mini-btn ghost-btn" id="cancelReplyBtn" type="button">取消</button>
             </div>
 
-            <h1 id="personName" class="serif text-5xl md:text-7xl font-black text-slate-950 tracking-wide leading-tight">纪念人物姓名</h1>
-            <p id="englishName" class="latin text-lg md:text-xl text-teal-700 mt-4 tracking-widest uppercase">In Loving Memory</p>
-            <p id="dates" class="text-slate-500 mt-5 text-lg md:text-xl font-medium">1935.07.12 — 2026.05.04</p>
-
-            <div id="identityList" class="mt-8 space-y-3 text-slate-700"></div>
-
-            <blockquote class="mt-10 border-l-4 border-amber-500/70 pl-5 serif text-xl md:text-2xl leading-relaxed text-slate-700">
-              <span id="heroQuote"></span>
-            </blockquote>
+            <label for="messageText">缅怀正文 <span aria-hidden="true">*</span></label>
+            <textarea id="messageText" placeholder="写下您对彭老师的思念、感谢、追忆或祝福……"></textarea>
           </div>
 
-          <div class="mt-10 flex flex-wrap gap-3 no-print">
-            <button id="flowerBtn" class="group px-5 py-3 rounded-full bg-teal-700 text-white hover:bg-teal-800 transition shadow-lg shadow-teal-900/15">
-              <i class="fa-solid fa-seedling mr-2 group-hover:scale-110 transition"></i>献花
-              <span class="ml-2 bg-white/18 px-2 py-0.5 rounded-full" id="flowerCount">0</span>
-            </button>
-            <button id="candleBtn" class="group px-5 py-3 rounded-full bg-amber-600 text-white hover:bg-amber-700 transition shadow-lg shadow-amber-900/15">
-              <i class="fa-solid fa-fire-flame-curved mr-2 group-hover:scale-110 transition"></i>点烛
-              <span class="ml-2 bg-white/18 px-2 py-0.5 rounded-full" id="candleCount">0</span>
-            </button>
-            <a href="#guestbook" class="px-5 py-3 rounded-full bg-slate-900 text-white hover:bg-slate-800 transition shadow-lg shadow-slate-900/15">
-              <i class="fa-solid fa-pen-nib mr-2"></i>写下追思
-            </a>
-          </div>
-        </div>
+          <div class="form-row">
+            <label>上传附件</label>
 
-        <div class="relative bg-slate-900/5 p-7 md:p-10 flex items-center justify-center">
-          <div class="absolute inset-8 rounded-[2rem] border border-white/45"></div>
-          <div class="relative w-full max-w-[390px]">
-            <div class="absolute -top-8 -right-8 w-28 h-28 bg-teal-200/40 rounded-full blur-2xl"></div>
-            <div class="absolute -bottom-8 -left-8 w-28 h-28 bg-amber-200/45 rounded-full blur-2xl"></div>
-            <div class="relative rounded-[2rem] p-4 bg-white/65 border border-white/70 shadow-2xl">
-              <img id="mainPhoto" src="assets/photo.jpg" alt="纪念人物照片" class="w-full aspect-[4/5] object-cover rounded-[1.45rem] bg-slate-100" onerror="this.src='https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=900&q=80'" />
+            <div class="upload-icons">
+              <label class="upload-icon-btn" for="imageInput" title="上传图片" aria-label="上传图片">
+                <span class="upload-icon">🖼️</span>
+                <span>图片</span>
+              </label>
+
+              <label class="upload-icon-btn" for="docInput" title="上传文档" aria-label="上传文档">
+                <span class="upload-icon">📄</span>
+                <span>文档</span>
+              </label>
             </div>
-            <div class="mt-5 flex justify-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-teal-600"></span>
-              <span class="w-2 h-2 rounded-full bg-teal-300"></span>
-              <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-            </div>
+
+            <input id="imageInput" type="file" multiple accept="image/jpeg,image/png,image/webp,image/gif" />
+            <input id="docInput" type="file" multiple accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.pdf,.doc,.docx" />
+
+            <div class="file-info" id="fileInfo"></div>
+          </div>
+
+          <button class="submit-btn" id="submitCommentBtn" type="button">提交留言</button>
+        </div>
+      </section>
+
+      <section class="section-block messages-panel" aria-label="留言展示区">
+        <div class="section-header">
+          <div class="section-title-row">
+            <h3>亲友缅怀留言</h3>
+            <span class="record-count" id="recordCount">共 0 条</span>
           </div>
         </div>
-      </div>
-    </section>
 
-    <!-- 数据仪式区 -->
-    <section class="max-w-6xl mx-auto grid md:grid-cols-3 gap-5 mt-6 fade-up">
-      <div class="soft-card rounded-3xl p-6">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm text-slate-500">已献鲜花</p>
-            <p class="text-3xl font-black text-teal-700"><span id="flowerCountCard">0</span><span class="text-base ml-1">束</span></p>
-          </div>
-          <div class="w-14 h-14 rounded-2xl bg-teal-50 flex items-center justify-center text-2xl">🌼</div>
+        <div class="messages-list" id="messagesList">
+          <div class="empty-state">正在加载缅怀留言……</div>
+        </div>
+
+        <div class="pagination" id="pagination"></div>
+
+        <div class="admin-bar admin-bar-bottom" aria-label="管理员操作区">
+          <button class="mini-btn ghost-btn" id="adminToggleBtn" type="button">管理员模式</button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      彭聃龄先生千古<br />
+      愿星光般的追忆，长伴先生温厚风范。<br />
+      彭聃龄先生线上缅怀室 · 永远的怀念
+    </footer>
+  </div>
+
+  <div class="preview-modal" id="previewModal" role="dialog" aria-modal="true" aria-label="附件预览">
+    <div class="preview-card">
+      <div class="preview-head">
+        <div class="preview-title" id="previewTitle">附件预览</div>
+        <div class="preview-actions">
+          <a class="mini-btn" id="previewDownload" href="#" target="_blank" rel="noopener">下载</a>
+          <button class="mini-btn ghost-btn" id="previewClose" type="button">关闭</button>
         </div>
       </div>
-      <div class="soft-card rounded-3xl p-6">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm text-slate-500">已点烛光</p>
-            <p class="text-3xl font-black text-amber-700"><span id="candleCountCard">0</span><span class="text-base ml-1">支</span></p>
-          </div>
-          <div class="w-14 h-14 rounded-2xl bg-amber-50 flex items-center justify-center">
-            <div class="candle-flame"></div>
-          </div>
-        </div>
-      </div>
-      <div class="soft-card rounded-3xl p-6">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm text-slate-500">追思留言</p>
-            <p class="text-3xl font-black text-blue-800"><span id="messageCountCard">0</span><span class="text-base ml-1">条</span></p>
-          </div>
-          <div class="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-2xl">🖋️</div>
-        </div>
-      </div>
-    </section>
 
-    <!-- 纪念文 -->
-    <section id="memorial" class="max-w-6xl mx-auto mt-8 glass rounded-[2rem] p-7 md:p-10 fade-up">
-      <h2 class="section-title text-2xl md:text-3xl mb-8"><i class="fa-solid fa-feather-pointed text-teal-600"></i>纪念文</h2>
-      <div class="grid lg:grid-cols-[1fr_310px] gap-8">
-        <article class="serif text-lg md:text-xl leading-[2.15] text-slate-700 whitespace-pre-line" id="memorialText"></article>
-        <aside class="soft-card rounded-3xl p-6 h-fit">
-          <div class="text-center" id="memorialCard">
-            <div class="serif text-xl font-bold text-slate-900 mb-2">纪念卡片</div>
-            <div class="text-sm text-slate-500 mb-5">扫码进入本页</div>
-            <canvas id="qrCanvas" class="mx-auto rounded-xl bg-white p-2"></canvas>
-            <div class="mt-5 serif font-bold text-slate-800" id="cardName">纪念人物姓名</div>
-            <div class="text-xs text-slate-500 mt-1" id="cardDate">1935.07.12 — 2026.05.04</div>
-          </div>
-          <div class="no-print mt-5 grid grid-cols-2 gap-2">
-            <button id="downloadQrBtn" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm transition"><i class="fa-solid fa-qrcode mr-1"></i>二维码</button>
-            <button id="downloadCardBtn" class="px-3 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-sm transition"><i class="fa-solid fa-download mr-1"></i>卡片</button>
-          </div>
-        </aside>
-      </div>
-    </section>
-
-    <!-- 生平 -->
-    <section id="life" class="max-w-6xl mx-auto mt-8 glass rounded-[2rem] p-7 md:p-10 fade-up">
-      <h2 class="section-title text-2xl md:text-3xl mb-8"><i class="fa-solid fa-book-open-reader text-teal-600"></i>人物生平</h2>
-      <div class="grid lg:grid-cols-[0.92fr_1.08fr] gap-8 items-start">
-        <div class="soft-card rounded-3xl overflow-hidden">
-          <img id="lifePhoto" src="assets/photo.jpg" alt="人物生平照片" class="w-full aspect-[5/4] object-cover bg-slate-100" onerror="this.src='https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=900&q=80'" />
-          <div class="p-6">
-            <div class="serif text-2xl font-black text-slate-900" id="lifeName">纪念人物姓名</div>
-            <div class="text-sm text-slate-500 mt-2" id="lifeIdentity">学术精神与人格风范，永远照亮后来者之路。</div>
-          </div>
-        </div>
-        <article id="bioText" class="serif text-lg leading-[2.05] text-slate-700 whitespace-pre-line"></article>
-      </div>
-    </section>
-
-    <!-- 年表 -->
-    <section id="timeline" class="max-w-6xl mx-auto mt-8 glass rounded-[2rem] p-7 md:p-10 fade-up">
-      <h2 class="section-title text-2xl md:text-3xl mb-8"><i class="fa-solid fa-timeline text-teal-600"></i>纪念年表</h2>
-      <div class="relative" id="timelineList">
-        <div class="timeline-line"></div>
-      </div>
-    </section>
-
-    <!-- 影像 -->
-    <section id="gallery" class="max-w-6xl mx-auto mt-8 glass rounded-[2rem] p-7 md:p-10 fade-up">
-      <h2 class="section-title text-2xl md:text-3xl mb-8"><i class="fa-solid fa-images text-teal-600"></i>纪念影像</h2>
-      <div id="galleryGrid" class="grid md:grid-cols-3 gap-5"></div>
-    </section>
-
-    <!-- 留言 -->
-    <section id="guestbook" class="max-w-6xl mx-auto mt-8 glass rounded-[2rem] p-7 md:p-10 fade-up">
-      <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8">
-        <h2 class="section-title text-2xl md:text-3xl flex-1"><i class="fa-solid fa-book-bookmark text-teal-600"></i>追思留言</h2>
-        <p class="text-sm text-slate-500 max-w-xl">留言会保存在当前浏览器中。若要让所有访问者共同看到留言，需要后续接入 GitHub Issues、LeanCloud、Firebase、Supabase 等公共留言系统。</p>
-      </div>
-
-      <div class="grid lg:grid-cols-[0.88fr_1.12fr] gap-7">
-        <form id="messageForm" class="soft-card rounded-3xl p-6 no-print">
-          <label class="block text-sm font-bold text-slate-700 mb-2">您的姓名</label>
-          <input id="visitorName" class="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-4 focus:ring-teal-100 focus:border-teal-500 bg-white/80" placeholder="请填写姓名" />
-
-          <label class="block text-sm font-bold text-slate-700 mt-5 mb-2">缅怀寄语</label>
-          <textarea id="visitorMessage" rows="7" class="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-4 focus:ring-teal-100 focus:border-teal-500 bg-white/80 resize-y" placeholder="写下您的追思、感谢与怀念……"></textarea>
-
-          <div class="mt-5 flex flex-wrap gap-3">
-            <button class="px-5 py-3 rounded-full bg-teal-700 hover:bg-teal-800 text-white transition" type="submit"><i class="fa-solid fa-paper-plane mr-2"></i>发表留言</button>
-            <button id="clearMessagesBtn" class="px-5 py-3 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 transition" type="button"><i class="fa-solid fa-trash-can mr-2"></i>清空本机留言</button>
-          </div>
-        </form>
-
-        <div class="soft-card rounded-3xl p-6">
-          <div class="flex items-center justify-between mb-4">
-            <div class="font-bold text-slate-800">留言墙</div>
-            <button id="exportMessagesBtn" class="no-print text-sm text-teal-700 hover:text-teal-900"><i class="fa-solid fa-file-arrow-down mr-1"></i>导出</button>
-          </div>
-          <div id="messageList" class="space-y-4 max-h-[520px] overflow-y-auto pr-1 scrollbar-thin"></div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <!-- 图片弹窗 -->
-  <div id="imageModal" class="hidden fixed inset-0 z-50 modal-backdrop p-4 items-center justify-center no-print">
-    <div class="max-w-5xl w-full">
-      <button id="closeModalBtn" class="mb-4 ml-auto block w-11 h-11 rounded-full bg-white/15 hover:bg-white/25 text-white transition"><i class="fa-solid fa-xmark"></i></button>
-      <img id="modalImage" src="" alt="放大图片" class="w-full max-h-[78vh] object-contain rounded-3xl shadow-2xl bg-white/10" />
-      <div id="modalCaption" class="text-white text-center mt-4 serif text-lg"></div>
+      <div class="preview-body" id="previewBody"></div>
     </div>
   </div>
 
-  <!-- Toast -->
-  <div id="toast" class="no-print fixed left-1/2 -translate-x-1/2 bottom-8 z-[60] hidden px-5 py-3 rounded-full bg-slate-950/88 text-white shadow-2xl text-sm"></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    const STORAGE = {
-      flowers: 'interactive_memorial_flowers_v1',
-      candles: 'interactive_memorial_candles_v1',
-      messages: 'interactive_memorial_messages_v1'
+    const SUPABASE_URL = 'https://rkxvccduocsowfbccrmg.supabase.co';
+    const SUPABASE_PUBLIC_KEY = 'sb_publishable_opaW2fRlrRVMnzEPZNRiUg_uqPX08sI';
+
+    const STORAGE_BUCKET = 'memorial-images';
+    const COMMENTS_TABLE = 'memorial_comments';
+
+    const MAX_IMAGE_COUNT = 1000;
+    const MAX_DOC_COUNT = 1000;
+    const MAX_FILE_BYTES = 300 * 1024 * 1024;
+    const MAX_TOTAL_BYTES = 300 * 1024 * 1024;
+    const PAGE_SIZE = 10;
+    const FOLD_LIMIT = 200;
+
+    const BLOCKED_PATTERNS = [
+      /习近平|国家主席|总书记|总理|总统|首相|人大委员长|政协主席|中央军委|政治局|常委|国家领导人|党和国家领导人/i,
+      /独裁|专政|暴政|极权|政权|一党专制|政治体制|体制黑暗|政治敏感/i,
+      /台独|港独|藏独|疆独|独立建国|国家分裂|分裂国家|领土分裂|分裂势力|领土完整/i,
+      /反动|颠覆|颠覆政权|推翻政府|推翻政权|煽动颠覆|暴乱|政变|非法集会|游行示威/i,
+      /法轮功|邪教|极端组织|恐怖组织|恐怖袭击|暴恐|圣战/i,
+
+      /打人|杀人|砍人|捅人|伤人|虐待|殴打|枪击|爆炸|纵火|自杀|血腥|暴力|灭门|报复社会/i,
+      /色情|淫秽|黄色|黄网|成人视频|成人内容|裸聊|裸露|裸体|援交|嫖娼|卖淫|约炮|性服务|性交|做爱|强奸|黄片|色情网|三级片|a片|AV女优/i,
+      /美女诱惑|激情四射|性感诱惑|暧昧挑逗|包夜|上门服务|特殊服务/i,
+
+      /笨蛋|脑残|傻逼|蠢货|白痴|废物|垃圾人|畜生|丑八怪|贱人|狗东西|去死|滚蛋|没用的东西/i,
+      /黑人|同性恋恶心|宗教垃圾|民族垃圾|低等人|种族歧视|性别歧视|宗教歧视/i,
+      /侮辱|辱骂|恶意诽谤|造谣|诅咒|辱骂家人|脏话连篇/i,
+
+      /广告|推广|打折促销|购买链接|点击购买|扫码加|加微信|加我微信|微信号|联系方式|联系电话|手机号|私聊|代理|代购|优惠券|返现|赚钱项目|兼职刷单/i,
+      /https?:\/\/|www\.|\.com|\.cn|\.net|\.org|\.top|\.xyz/i,
+      /\b1[3-9]\d{9}\b/i,
+
+      /大家一起去骂|一起去骂|快来围观|人肉搜索|曝光他|挂人|网暴|冲了他|带节奏/i,
+      /谣言|不实传闻|内幕消息|未经证实|小道消息|造谣传谣|散播谣言/i,
+
+      /诈骗|赌博|博彩|赌球|盘口|下注|私彩|六合彩|洗钱|传销|毒品|吸毒|贩毒|冰毒|海洛因|大麻|摇头丸|K粉|麻古/i
+    ];
+
+    const isConfigured =
+      !SUPABASE_URL.includes('YOUR_SUPABASE_URL') &&
+      !SUPABASE_PUBLIC_KEY.includes('YOUR_SUPABASE_PUBLISHABLE_KEY');
+
+    const client = isConfigured
+      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLIC_KEY, {
+          realtime: { params: { eventsPerSecond: 5 } }
+        })
+      : null;
+
+    const els = {
+      setupWarning: document.getElementById('setupWarning'),
+      memoryVideo: document.getElementById('memoryVideo'),
+      visitorName: document.getElementById('visitorName'),
+      visitorRelation: document.getElementById('visitorRelation'),
+      messageText: document.getElementById('messageText'),
+      imageInput: document.getElementById('imageInput'),
+      docInput: document.getElementById('docInput'),
+      fileInfo: document.getElementById('fileInfo'),
+      submitCommentBtn: document.getElementById('submitCommentBtn'),
+      messagesList: document.getElementById('messagesList'),
+      pagination: document.getElementById('pagination'),
+      recordCount: document.getElementById('recordCount'),
+      replyTarget: document.getElementById('replyTarget'),
+      replyText: document.getElementById('replyText'),
+      cancelReplyBtn: document.getElementById('cancelReplyBtn'),
+      toast: document.getElementById('toast'),
+      previewModal: document.getElementById('previewModal'),
+      previewTitle: document.getElementById('previewTitle'),
+      previewBody: document.getElementById('previewBody'),
+      previewDownload: document.getElementById('previewDownload'),
+      previewClose: document.getElementById('previewClose'),
+      adminToggleBtn: document.getElementById('adminToggleBtn')
     };
 
-    const $ = (id) => document.getElementById(id);
+    let allComments = [];
+    let currentPage = 1;
+    let replyParentId = null;
+    let replyParentName = '';
+    let editingCommentId = null;
+    let editingOriginalContent = '';
+    let toastTimer = null;
+    let adminToken = sessionStorage.getItem('memorial_admin_token') || '';
+    let adminMode = Boolean(adminToken);
 
-    function showToast(text) {
-      const toast = $('toast');
-      toast.textContent = text;
-      toast.classList.remove('hidden');
-      clearTimeout(window.__toastTimer);
-      window.__toastTimer = setTimeout(() => toast.classList.add('hidden'), 2200);
+    function showToast(message, type = 'normal') {
+      clearTimeout(toastTimer);
+      els.toast.textContent = message;
+      els.toast.style.borderColor = type === 'error'
+        ? 'rgba(241,183,173,.58)'
+        : 'rgba(255,255,255,.14)';
+      els.toast.classList.add('show');
+      toastTimer = setTimeout(() => els.toast.classList.remove('show'), 3000);
     }
 
-    function getNumber(key) {
-      const value = localStorage.getItem(key);
-      return value ? Number(value) : 0;
+    function requireBackend() {
+      if (isConfigured) return true;
+      showToast('请先在代码中填写 Supabase URL 和 Publishable key。', 'error');
+      return false;
     }
 
-    function setNumber(key, value) {
-      localStorage.setItem(key, String(value));
+    function normalizeRiskText(value) {
+      return String(value || '')
+        .normalize('NFKC')
+        .replace(/[\s\u200B-\u200D\uFEFF]/g, '')
+        .replace(/[，。！？、；：“”‘’（）【】《》〈〉]/g, '')
+        .toLowerCase();
     }
 
-    function getMessages() {
-      const saved = localStorage.getItem(STORAGE.messages);
-      if (saved) {
-        try { return JSON.parse(saved); } catch (_) { return CONFIG.defaultMessages || []; }
+    function hasBlockedContent(value) {
+      const normalized = normalizeRiskText(value);
+
+      if (BLOCKED_PATTERNS.some(pattern => pattern.test(normalized))) {
+        return true;
       }
-      return CONFIG.defaultMessages || [];
+
+      const politicalTitleNearName =
+        /(国家主席|总书记|总统|总理|首相|国家领导人|党和国家领导人)[\u4e00-\u9fa5]{2,4}/i.test(normalized) ||
+        /[\u4e00-\u9fa5]{2,4}(总统|总理|首相|主席|总书记)/i.test(normalized);
+
+      return politicalTitleNearName;
     }
 
-    function saveMessages(messages) {
-      localStorage.setItem(STORAGE.messages, JSON.stringify(messages));
+    function commentHasBlockedContent(comment) {
+      const attachments = Array.isArray(comment.attachments) ? comment.attachments : [];
+      const attachmentNames = attachments.map(item => item.name || '').join(' ');
+      const combined = [
+        comment.visitor_name,
+        comment.visitor_relation,
+        comment.content,
+        attachmentNames
+      ].join(' ');
+      return hasBlockedContent(combined);
     }
 
-    function formatTime(date = new Date()) {
-      const y = date.getFullYear();
-      const m = String(date.getMonth() + 1).padStart(2, '0');
-      const d = String(date.getDate()).padStart(2, '0');
-      const h = String(date.getHours()).padStart(2, '0');
-      const min = String(date.getMinutes()).padStart(2, '0');
-      return `${y}-${m}-${d} ${h}:${min}`;
-    }
-
-    function updateCounts() {
-      const flowers = getNumber(STORAGE.flowers);
-      const candles = getNumber(STORAGE.candles);
-      $('flowerCount').textContent = flowers;
-      $('flowerCountCard').textContent = flowers;
-      $('candleCount').textContent = candles;
-      $('candleCountCard').textContent = candles;
-      $('messageCountCard').textContent = getMessages().length;
-    }
-
-    function createPetalBurst() {
-      const petals = ['🌼', '🌿', '🤍', '🌸'];
-      for (let i = 0; i < 18; i++) {
-        const petal = document.createElement('div');
-        petal.className = 'float-petal text-2xl';
-        petal.textContent = petals[Math.floor(Math.random() * petals.length)];
-        petal.style.left = Math.random() * 100 + 'vw';
-        petal.style.setProperty('--drift', (Math.random() * 240 - 120) + 'px');
-        petal.style.animationDuration = (4.8 + Math.random() * 3.8) + 's';
-        petal.style.animationDelay = (Math.random() * 0.8) + 's';
-        document.body.appendChild(petal);
-        setTimeout(() => petal.remove(), 9000);
+    function getVisitorKey() {
+      let key = localStorage.getItem('memorial_visitor_key');
+      if (!key) {
+        key = crypto.randomUUID
+          ? crypto.randomUUID()
+          : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+        localStorage.setItem('memorial_visitor_key', key);
       }
+      return key;
     }
 
-    function renderIdentity() {
-      const box = $('identityList');
-      box.innerHTML = '';
-      CONFIG.person.identity.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'flex items-center gap-3';
-        div.innerHTML = `<span class="w-7 h-7 rounded-full bg-teal-50 text-teal-700 flex items-center justify-center"><i class="fa-solid fa-check text-xs"></i></span><span>${item}</span>`;
-        box.appendChild(div);
-      });
+    function setLoading(button, loadingText) {
+      const oldText = button.textContent;
+      button.classList.add('loading');
+      button.disabled = true;
+      button.textContent = loadingText;
+
+      return () => {
+        button.classList.remove('loading');
+        button.disabled = false;
+        button.textContent = oldText;
+      };
     }
 
-    function renderTimeline() {
-      const container = $('timelineList');
-      container.innerHTML = '<div class="timeline-line"></div>';
-      CONFIG.timeline.forEach((item, index) => {
-        const row = document.createElement('div');
-        row.className = 'relative pl-14 pb-8 last:pb-0';
-        row.innerHTML = `
-          <div class="absolute left-0 top-1 w-9 h-9 rounded-full bg-teal-700 text-white flex items-center justify-center shadow-lg shadow-teal-900/20 z-10">
-            <i class="fa-solid fa-star text-xs"></i>
-          </div>
-          <div class="soft-card rounded-3xl p-5 hover:-translate-y-1 transition duration-300">
-            <div class="flex flex-col md:flex-row md:items-baseline md:justify-between gap-1 mb-2">
-              <div class="serif text-xl font-black text-slate-900">${item.title}</div>
-              <div class="text-sm font-bold text-teal-700">${item.year}</div>
-            </div>
-            <p class="text-slate-600 leading-7">${item.text}</p>
-          </div>`;
-        container.appendChild(row);
-      });
-    }
-
-    function renderGallery() {
-      const grid = $('galleryGrid');
-      grid.innerHTML = '';
-      CONFIG.gallery.forEach((item, index) => {
-        const card = document.createElement('button');
-        card.type = 'button';
-        card.className = 'group soft-card rounded-3xl overflow-hidden text-left hover:-translate-y-1 transition duration-300 no-print';
-        card.innerHTML = `
-          <div class="aspect-[4/3] overflow-hidden bg-slate-100">
-            <img src="${item.src}" alt="${item.caption}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="this.src='https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=900&q=80'">
-          </div>
-          <div class="p-4 flex items-center justify-between">
-            <span class="serif font-bold text-slate-800">${item.caption}</span>
-            <i class="fa-solid fa-up-right-and-down-left-from-center text-teal-700 opacity-70"></i>
-          </div>`;
-        card.addEventListener('click', () => openImageModal(item.src, item.caption));
-        grid.appendChild(card);
-      });
-    }
-
-    function openImageModal(src, caption) {
-      $('modalImage').src = src;
-      $('modalCaption').textContent = caption;
-      $('imageModal').classList.remove('hidden');
-      $('imageModal').classList.add('flex');
-    }
-
-    function closeImageModal() {
-      $('imageModal').classList.add('hidden');
-      $('imageModal').classList.remove('flex');
-    }
-
-    function renderMessages() {
-      const list = $('messageList');
-      const messages = getMessages();
-      list.innerHTML = '';
-      messages.slice().reverse().forEach(msg => {
-        const item = document.createElement('article');
-        item.className = 'rounded-3xl bg-white/75 border border-slate-100 p-5';
-        const name = document.createElement('div');
-        name.className = 'font-bold text-slate-900 mb-2 flex items-center gap-2';
-        name.innerHTML = '<i class="fa-solid fa-user-pen text-teal-600"></i>';
-        name.appendChild(document.createTextNode(msg.name));
-        const text = document.createElement('p');
-        text.className = 'serif text-slate-700 leading-8 whitespace-pre-wrap';
-        text.textContent = msg.text;
-        const time = document.createElement('div');
-        time.className = 'text-xs text-slate-400 mt-3';
-        time.textContent = msg.time;
-        item.appendChild(name);
-        item.appendChild(text);
-        item.appendChild(time);
-        list.appendChild(item);
-      });
-      updateCounts();
-    }
-
-    function generateQR() {
-      const canvas = $('qrCanvas');
-      QRCode.toCanvas(canvas, window.location.href, {
-        width: 190,
-        margin: 1,
-        color: { dark: '#172033', light: '#ffffff' }
-      }, err => { if (err) console.error(err); });
-    }
-
-    function downloadCanvas(canvas, filename) {
-      const link = document.createElement('a');
-      link.download = filename;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-    }
-
-    async function downloadCard() {
-      const card = $('memorialCard');
-      const canvas = await html2canvas(card, { backgroundColor: '#ffffff', scale: 2 });
-      downloadCanvas(canvas, 'memorial-card.png');
-    }
-
-    function exportMessages() {
-      const messages = getMessages();
-      const text = messages.map(m => `[${m.time}] ${m.name}\n${m.text}`).join('\n\n---\n\n');
-      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'memorial-messages.txt';
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    async function sharePage() {
-      const data = { title: document.title, text: CONFIG.heroQuote, url: window.location.href };
-      if (navigator.share) {
-        try { await navigator.share(data); return; } catch (_) {}
-      }
+    function formatTime(value) {
       try {
-        await navigator.clipboard.writeText(window.location.href);
-        showToast('页面链接已复制');
-      } catch (_) {
-        showToast('请复制浏览器地址栏中的链接');
+        return new Intl.DateTimeFormat('zh-CN', {
+          timeZone: 'Asia/Shanghai',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        }).format(new Date(value));
+      } catch (error) {
+        return '';
       }
     }
 
-    function initMusic() {
-      const audio = $('bgm');
-      const btn = $('musicBtn');
-      audio.src = CONFIG.person.music;
-      audio.volume = 0.62;
+    function formatBytes(bytes) {
+      if (!Number.isFinite(bytes)) return '';
+      const units = ['B', 'KB', 'MB', 'GB'];
+      let value = bytes;
+      let unit = 0;
 
-      btn.addEventListener('click', async () => {
+      while (value >= 1024 && unit < units.length - 1) {
+        value /= 1024;
+        unit++;
+      }
+
+      return `${value.toFixed(value >= 10 || unit === 0 ? 0 : 1)} ${units[unit]}`;
+    }
+
+    function safeAsciiName(value, fallback = 'file') {
+      const cleaned = String(value || '')
+        .normalize('NFKD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-zA-Z0-9._-]+/g, '-')
+        .replace(/[-_.]{2,}/g, '-')
+        .replace(/^[-_.]+|[-_.]+$/g, '')
+        .toLowerCase();
+
+      return (cleaned || fallback).slice(0, 80);
+    }
+
+    function pad2(value) {
+      return String(value).padStart(2, '0');
+    }
+
+    function getExt(file) {
+      const fromName = file.name.includes('.')
+        ? file.name.split('.').pop().toLowerCase()
+        : '';
+
+      const mimeMap = {
+        'image/jpeg': 'jpg',
+        'image/png': 'png',
+        'image/webp': 'webp',
+        'image/gif': 'gif',
+        'application/pdf': 'pdf',
+        'application/msword': 'doc',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx'
+      };
+
+      return mimeMap[file.type] || fromName || 'file';
+    }
+
+    function buildFilePath(file, kind, commentId) {
+      const now = new Date();
+      const dateFolder = `${now.getFullYear()}-${pad2(now.getMonth() + 1)}-${pad2(now.getDate())}`;
+      const visitor = safeAsciiName(getVisitorKey().slice(0, 12), 'visitor');
+      const base = safeAsciiName(file.name.replace(/\.[^.]+$/, ''), kind);
+      const random = crypto.randomUUID
+        ? crypto.randomUUID().replace(/-/g, '').slice(0, 10)
+        : Math.random().toString(36).slice(2, 12);
+      const ext = getExt(file);
+
+      return `comments/${dateFolder}/${visitor}/${commentId}/${kind}-${base}-${random}.${ext}`;
+    }
+
+    function initVideo() {
+      if (!els.memoryVideo) return;
+
+      function setHalfVolume() {
+        els.memoryVideo.volume = 0.5;
+        els.memoryVideo.muted = false;
+        els.memoryVideo.defaultMuted = false;
+      }
+
+      setHalfVolume();
+
+      els.memoryVideo.addEventListener('loadedmetadata', () => {
+        setHalfVolume();
+        tryPlayVideo(true);
+      });
+
+      els.memoryVideo.addEventListener('error', () => {
+        showToast('视频加载失败：请确认“追忆影像.mp4”在 assets 文件夹中。', 'error');
+      });
+
+      tryPlayVideo(true);
+
+      document.addEventListener('click', () => {
+        setHalfVolume();
+        if (els.memoryVideo.paused) tryPlayVideo(false);
+      }, { once: true });
+    }
+
+    async function tryPlayVideo(showTip = false) {
+      try {
+        els.memoryVideo.muted = false;
+        els.memoryVideo.defaultMuted = false;
+        els.memoryVideo.volume = 0.5;
+        await els.memoryVideo.play();
+        return true;
+      } catch (error) {
+        console.warn('Video autoplay with sound blocked:', error);
+
         try {
-          if (audio.paused) {
-            await audio.play();
-            btn.innerHTML = '<i class="fa-solid fa-pause mr-1"></i><span class="hidden sm:inline">暂停</span>';
-          } else {
-            audio.pause();
-            btn.innerHTML = '<i class="fa-solid fa-music mr-1"></i><span class="hidden sm:inline">音乐</span>';
+          els.memoryVideo.muted = true;
+          els.memoryVideo.defaultMuted = true;
+          await els.memoryVideo.play();
+          return true;
+        } catch (silentError) {
+          console.warn('Muted autoplay also failed:', silentError);
+          if (showTip) {
+            showToast('浏览器可能限制自动播放，请点击视频播放按钮。');
           }
-        } catch (e) {
-          showToast('浏览器限制自动播放，请再次点击音乐按钮');
+          return false;
         }
-      });
-
-      // 用户第一次点击页面时尝试播放，兼容多数浏览器限制。
-      function firstGesturePlay() {
-        if (audio.paused) {
-          audio.play().then(() => {
-            btn.innerHTML = '<i class="fa-solid fa-pause mr-1"></i><span class="hidden sm:inline">暂停</span>';
-          }).catch(() => {});
-        }
-        document.removeEventListener('click', firstGesturePlay);
-        document.removeEventListener('touchstart', firstGesturePlay);
       }
-      document.addEventListener('click', firstGesturePlay);
-      document.addEventListener('touchstart', firstGesturePlay);
     }
 
-    function initNavSpy() {
-      const links = [...document.querySelectorAll('.nav-link')];
-      const sections = links.map(link => document.querySelector(link.getAttribute('href'))).filter(Boolean);
-      const observer = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            links.forEach(link => link.classList.toggle('active', link.getAttribute('href') === '#' + entry.target.id));
+    function selectedFiles() {
+      return {
+        images: [...els.imageInput.files],
+        docs: [...els.docInput.files]
+      };
+    }
+
+    function updateFileInfo() {
+      const { images, docs } = selectedFiles();
+      const total = [...images, ...docs].reduce((sum, file) => sum + file.size, 0);
+
+      if (!images.length && !docs.length) {
+        els.fileInfo.textContent = '';
+        return;
+      }
+
+      const parts = [];
+      if (images.length) parts.push(`已选图片 ${images.length} 张`);
+      if (docs.length) parts.push(`已选文档 ${docs.length} 份`);
+      parts.push(`合计 ${formatBytes(total)}`);
+
+      els.fileInfo.textContent = parts.join('；');
+    }
+
+    function validateIdentityAndContent() {
+      const visitorName = els.visitorName.value.trim();
+      const visitorRelation = els.visitorRelation.value.trim();
+      const content = els.messageText.value.trim();
+
+      if (!visitorName) {
+        showToast('请填写姓名', 'error');
+        els.visitorName.focus();
+        return null;
+      }
+
+      if (!visitorRelation) {
+        showToast('请选择与先生的关系', 'error');
+        els.visitorRelation.focus();
+        return null;
+      }
+
+      if (!content) {
+        showToast('请输入留言内容', 'error');
+        els.messageText.focus();
+        return null;
+      }
+
+      return { visitorName, visitorRelation, content };
+    }
+
+    function passRiskCheck(checked) {
+      const { images, docs } = selectedFiles();
+      const fileNames = [...images, ...docs].map(file => file.name).join(' ');
+      const combined = `${checked.visitorName} ${checked.visitorRelation} ${checked.content} ${fileNames}`;
+
+      if (hasBlockedContent(combined)) {
+        showToast('评论内容包含不适宜展示的信息，无法提交。', 'error');
+        return false;
+      }
+
+      return true;
+    }
+
+    function validateFiles() {
+      const { images, docs } = selectedFiles();
+      const all = [...images, ...docs];
+
+      const imageTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+      const docTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      ];
+
+      if (images.length > MAX_IMAGE_COUNT) {
+        showToast('图片数量超过限制，每条留言最多上传1000张图片。', 'error');
+        return false;
+      }
+
+      if (docs.length > MAX_DOC_COUNT) {
+        showToast('文档数量超过限制，每条留言最多上传1000份文档。', 'error');
+        return false;
+      }
+
+      for (const file of images) {
+        if (!imageTypes.includes(file.type)) {
+          showToast('图片格式不支持。仅支持 jpg、png、webp、gif。', 'error');
+          return false;
+        }
+      }
+
+      for (const file of docs) {
+        const lower = file.name.toLowerCase();
+        const extOk = lower.endsWith('.pdf') || lower.endsWith('.doc') || lower.endsWith('.docx');
+
+        if (!docTypes.includes(file.type) && !extOk) {
+          showToast('文档格式不支持。仅支持 PDF、Word 文档。', 'error');
+          return false;
+        }
+      }
+
+      if (all.some(file => file.size > MAX_FILE_BYTES)) {
+        showToast('文件大小超过限制，请上传小于300MB的文件。', 'error');
+        return false;
+      }
+
+      const total = all.reduce((sum, file) => sum + file.size, 0);
+
+      if (total > MAX_TOTAL_BYTES) {
+        showToast('文件总大小超过限制，请控制在300MB以内。', 'error');
+        return false;
+      }
+
+      return true;
+    }
+
+    async function uploadAttachments(commentId) {
+      const { images, docs } = selectedFiles();
+
+      const queue = [
+        ...images.map(file => ({ file, kind: 'image' })),
+        ...docs.map(file => ({ file, kind: 'document' }))
+      ];
+
+      const attachments = [];
+
+      for (const item of queue) {
+        const path = buildFilePath(item.file, item.kind, commentId);
+
+        const { error: uploadError } = await client.storage
+          .from(STORAGE_BUCKET)
+          .upload(path, item.file, {
+            cacheControl: '3600',
+            upsert: false,
+            contentType: item.file.type || undefined
+          });
+
+        if (uploadError) {
+          console.error(uploadError);
+          throw new Error(uploadError.message || '附件上传失败');
+        }
+
+        const { data } = client.storage.from(STORAGE_BUCKET).getPublicUrl(path);
+
+        attachments.push({
+          kind: item.kind,
+          name: item.file.name,
+          mime: item.file.type || '',
+          size: item.file.size,
+          path,
+          url: data.publicUrl
+        });
+      }
+
+      return attachments;
+    }
+
+    async function submitComment() {
+      if (!requireBackend()) return;
+
+      if (editingCommentId) {
+        await updateOwnComment();
+        return;
+      }
+
+      const checked = validateIdentityAndContent();
+      if (!checked) return;
+      if (!passRiskCheck(checked)) return;
+      if (!validateFiles()) return;
+
+      const reset = setLoading(els.submitCommentBtn, '正在提交…');
+
+      const commentId = crypto.randomUUID
+        ? crypto.randomUUID()
+        : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+
+      try {
+        const attachments = await uploadAttachments(commentId);
+
+        const payload = {
+          id: commentId,
+          visitor_name: checked.visitorName,
+          visitor_relation: checked.visitorRelation,
+          visitor_key: getVisitorKey(),
+          content: checked.content,
+          parent_id: replyParentId,
+          attachments
+        };
+
+        const { error } = await client.from(COMMENTS_TABLE).insert(payload);
+        if (error) throw error;
+
+        localStorage.removeItem('memorial_draft_content');
+        localStorage.removeItem('memorial_reply_parent_id');
+        localStorage.removeItem('memorial_reply_parent_name');
+
+        els.messageText.value = '';
+        els.imageInput.value = '';
+        els.docInput.value = '';
+
+        clearReply();
+        clearEdit();
+        updateFileInfo();
+
+        showToast('留言已提交。');
+        await loadComments();
+      } catch (error) {
+        console.error(error);
+        showToast(error.message ? `提交失败：${error.message}` : '提交失败，请检查数据库和 Storage 权限。', 'error');
+      } finally {
+        reset();
+      }
+    }
+
+    async function loadComments() {
+      if (!isConfigured) {
+        renderComments();
+        return;
+      }
+
+      const { data, error } = await client
+        .from(COMMENTS_TABLE)
+        .select('id, created_at, updated_at, visitor_name, visitor_relation, visitor_key, content, parent_id, attachments')
+        .order('created_at', { ascending: false })
+        .limit(1000);
+
+      if (error) {
+        console.error(error);
+        els.setupWarning.classList.add('show');
+        showToast('留言加载失败，请检查 memorial_comments 表和读取权限。', 'error');
+        allComments = [];
+        renderComments();
+        return;
+      }
+
+      allComments = (data || []).filter(comment => !commentHasBlockedContent(comment));
+      renderComments();
+    }
+
+    function renderComments() {
+      els.messagesList.innerHTML = '';
+      els.pagination.innerHTML = '';
+      els.recordCount.textContent = `共 ${allComments.length} 条`;
+
+      if (!allComments.length) {
+        const empty = document.createElement('div');
+        empty.className = 'empty-state';
+        empty.textContent = isConfigured
+          ? '还没有缅怀留言。您可以成为第一位留言的人。'
+          : '请先完成 Supabase 配置，页面会在这里显示所有缅怀留言。';
+        els.messagesList.appendChild(empty);
+        return;
+      }
+
+      const topLevel = allComments
+        .filter(comment => !comment.parent_id)
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+      const totalPages = Math.max(1, Math.ceil(topLevel.length / PAGE_SIZE));
+      currentPage = Math.min(Math.max(currentPage, 1), totalPages);
+
+      const start = (currentPage - 1) * PAGE_SIZE;
+      const pageItems = topLevel.slice(start, start + PAGE_SIZE);
+
+      const replyMap = new Map();
+
+      allComments
+        .filter(comment => comment.parent_id)
+        .forEach(comment => {
+          if (!replyMap.has(comment.parent_id)) replyMap.set(comment.parent_id, []);
+          replyMap.get(comment.parent_id).push(comment);
+        });
+
+      replyMap.forEach(list => {
+        list.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+      });
+
+      const frag = document.createDocumentFragment();
+
+      pageItems.forEach(comment => {
+        frag.appendChild(createCommentElement(comment, false));
+        appendReplies(frag, comment.id, replyMap, 1);
+      });
+
+      els.messagesList.appendChild(frag);
+      renderPagination(totalPages);
+    }
+
+    function appendReplies(container, parentId, replyMap, depth) {
+      const replies = replyMap.get(parentId) || [];
+
+      replies.forEach(reply => {
+        container.appendChild(createCommentElement(reply, true, depth));
+        appendReplies(container, reply.id, replyMap, depth + 1);
+      });
+    }
+
+    function createCommentElement(comment, isReply, depth = 0) {
+      const card = document.createElement('article');
+      card.className = `comment-card${isReply ? ' reply-card' : ''}`;
+      card.style.marginLeft = isReply ? `${Math.min(depth * 22, 66)}px` : '';
+
+      const meta = document.createElement('div');
+      meta.className = 'comment-meta';
+
+      const left = document.createElement('div');
+
+      const name = document.createElement('span');
+      name.className = 'visitor-name';
+      name.textContent = comment.visitor_name || '匿名访客';
+
+      const relation = document.createElement('span');
+      relation.className = 'relation-badge';
+      relation.textContent = comment.visitor_relation || '未标注';
+
+      left.appendChild(name);
+      left.appendChild(relation);
+
+      const time = document.createElement('time');
+      time.className = 'time';
+      time.textContent = formatTime(comment.created_at);
+
+      const edited = comment.updated_at ? document.createElement('span') : null;
+      if (edited) {
+        edited.className = 'edited-mark';
+        edited.textContent = '已修改';
+        time.appendChild(edited);
+      }
+
+      meta.appendChild(left);
+      meta.appendChild(time);
+      card.appendChild(meta);
+
+      const content = document.createElement('div');
+      content.className = 'comment-content';
+
+      const fullText = comment.content || '';
+      const isLong = fullText.length > FOLD_LIMIT;
+
+      content.textContent = isLong ? `${fullText.slice(0, FOLD_LIMIT)}……` : fullText;
+      card.appendChild(content);
+
+      if (isLong) {
+        const foldBtn = document.createElement('button');
+        foldBtn.className = 'mini-btn ghost-btn';
+        foldBtn.type = 'button';
+        foldBtn.textContent = '展开';
+
+        foldBtn.addEventListener('click', () => {
+          const expanded = foldBtn.textContent === '收起';
+          content.textContent = expanded ? `${fullText.slice(0, FOLD_LIMIT)}……` : fullText;
+          foldBtn.textContent = expanded ? '展开' : '收起';
+        });
+
+        const row = document.createElement('div');
+        row.className = 'comment-actions';
+        row.appendChild(foldBtn);
+        card.appendChild(row);
+      }
+
+      const attachments = Array.isArray(comment.attachments) ? comment.attachments : [];
+
+      if (attachments.length) {
+        card.appendChild(createAttachmentsElement(attachments));
+      }
+
+      const actions = document.createElement('div');
+      actions.className = 'comment-actions';
+
+      const replyBtn = document.createElement('button');
+      replyBtn.className = 'mini-btn';
+      replyBtn.type = 'button';
+      replyBtn.textContent = '回复';
+      replyBtn.addEventListener('click', () => setReply(comment));
+      actions.appendChild(replyBtn);
+
+      const isOwnComment = comment.visitor_key && comment.visitor_key === getVisitorKey();
+
+      if (isOwnComment) {
+        const editBtn = document.createElement('button');
+        editBtn.className = 'mini-btn';
+        editBtn.type = 'button';
+        editBtn.textContent = '修改我的留言';
+        editBtn.addEventListener('click', () => setEdit(comment));
+        actions.appendChild(editBtn);
+
+        const ownDeleteBtn = document.createElement('button');
+        ownDeleteBtn.className = 'mini-btn danger-btn';
+        ownDeleteBtn.type = 'button';
+        ownDeleteBtn.textContent = '删除我的留言';
+        ownDeleteBtn.addEventListener('click', () => deleteOwnComment(comment));
+        actions.appendChild(ownDeleteBtn);
+      }
+
+      if (adminMode) {
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'mini-btn danger-btn';
+        deleteBtn.type = 'button';
+        deleteBtn.textContent = '管理员删除';
+        deleteBtn.addEventListener('click', () => deleteComment(comment));
+        actions.appendChild(deleteBtn);
+      }
+
+      card.appendChild(actions);
+
+      return card;
+    }
+
+    function createAttachmentsElement(attachments) {
+      const wrap = document.createElement('div');
+      wrap.className = 'attachments';
+
+      const images = attachments.filter(item => item.kind === 'image');
+      const docs = attachments.filter(item => item.kind === 'document');
+
+      if (images.length) {
+        const gallery = document.createElement('div');
+        gallery.className = 'image-gallery';
+
+        images.forEach(item => {
+          const btn = document.createElement('button');
+          btn.className = 'thumb';
+          btn.type = 'button';
+          btn.title = item.name || '图片预览';
+
+          const img = document.createElement('img');
+          img.src = item.url;
+          img.alt = item.name || '缅怀图片';
+          img.loading = 'lazy';
+
+          btn.appendChild(img);
+          btn.addEventListener('click', () => openPreview(item));
+          gallery.appendChild(btn);
+        });
+
+        wrap.appendChild(gallery);
+      }
+
+      if (docs.length) {
+        const list = document.createElement('div');
+        list.className = 'doc-list';
+
+        docs.forEach(item => {
+          const doc = document.createElement('div');
+          doc.className = 'doc-item';
+
+          const icon = document.createElement('div');
+          icon.className = 'doc-icon';
+          icon.textContent = getDocIcon(item);
+
+          const info = document.createElement('div');
+
+          const name = document.createElement('div');
+          name.className = 'doc-name';
+          name.textContent = item.name || '悼念文档';
+
+          const size = document.createElement('div');
+          size.className = 'doc-size';
+          size.textContent = formatBytes(item.size || 0);
+
+          info.appendChild(name);
+          info.appendChild(size);
+
+          const actions = document.createElement('div');
+          actions.className = 'doc-actions';
+
+          const preview = document.createElement('button');
+          preview.className = 'mini-btn';
+          preview.type = 'button';
+          preview.textContent = '在线预览';
+          preview.addEventListener('click', () => openPreview(item));
+
+          const download = document.createElement('a');
+          download.className = 'mini-btn ghost-btn';
+          download.href = item.url;
+          download.target = '_blank';
+          download.rel = 'noopener';
+          download.download = item.name || '';
+          download.textContent = '下载';
+
+          actions.appendChild(preview);
+          actions.appendChild(download);
+
+          doc.appendChild(icon);
+          doc.appendChild(info);
+          doc.appendChild(actions);
+
+          list.appendChild(doc);
+        });
+
+        wrap.appendChild(list);
+      }
+
+      return wrap;
+    }
+
+    function getDocIcon(item) {
+      const name = (item.name || '').toLowerCase();
+      if (name.endsWith('.pdf') || item.mime === 'application/pdf') return 'PDF';
+      return '文';
+    }
+
+    function getPreviewUrl(item) {
+      const name = (item.name || '').toLowerCase();
+
+      const isPdf =
+        item.mime === 'application/pdf' ||
+        name.endsWith('.pdf');
+
+      const isWord =
+        name.endsWith('.doc') ||
+        name.endsWith('.docx') ||
+        item.mime === 'application/msword' ||
+        item.mime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+
+      if (isPdf) return item.url;
+      if (isWord) return `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(item.url)}`;
+
+      return '';
+    }
+
+    function openPreview(item) {
+      els.previewTitle.textContent = item.name || '附件预览';
+      els.previewDownload.href = item.url || '#';
+      els.previewDownload.download = item.name || '';
+      els.previewBody.innerHTML = '';
+
+      if (item.kind === 'image') {
+        const img = document.createElement('img');
+        img.src = item.url;
+        img.alt = item.name || '图片预览';
+        els.previewBody.appendChild(img);
+      } else {
+        const url = getPreviewUrl(item);
+
+        if (!url) {
+          els.previewBody.innerHTML =
+            '<div style="padding:24px;color:#f6f2e8;text-align:center;line-height:1.8;">预览失败，请尝试下载后查看。</div>';
+          showToast('预览失败，请尝试下载后查看。', 'error');
+        } else {
+          const iframe = document.createElement('iframe');
+          iframe.src = url;
+          iframe.title = item.name || '文档在线预览';
+          iframe.addEventListener('error', () => showToast('预览失败，请尝试下载后查看。', 'error'));
+          els.previewBody.appendChild(iframe);
+        }
+      }
+
+      els.previewModal.classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closePreview() {
+      els.previewModal.classList.remove('show');
+      els.previewBody.innerHTML = '';
+      document.body.style.overflow = '';
+    }
+
+    function renderPagination(totalPages) {
+      if (totalPages <= 1) return;
+
+      const prev = document.createElement('button');
+      prev.className = 'page-btn';
+      prev.type = 'button';
+      prev.textContent = '‹';
+      prev.disabled = currentPage === 1;
+
+      prev.addEventListener('click', () => {
+        currentPage -= 1;
+        renderComments();
+      });
+
+      els.pagination.appendChild(prev);
+
+      for (let page = 1; page <= totalPages; page++) {
+        const btn = document.createElement('button');
+        btn.className = `page-btn${page === currentPage ? ' active' : ''}`;
+        btn.type = 'button';
+        btn.textContent = String(page);
+
+        btn.addEventListener('click', () => {
+          currentPage = page;
+          renderComments();
+        });
+
+        els.pagination.appendChild(btn);
+      }
+
+      const next = document.createElement('button');
+      next.className = 'page-btn';
+      next.type = 'button';
+      next.textContent = '›';
+      next.disabled = currentPage === totalPages;
+
+      next.addEventListener('click', () => {
+        currentPage += 1;
+        renderComments();
+      });
+
+      els.pagination.appendChild(next);
+    }
+
+    function setEdit(comment) {
+      clearReply();
+
+      editingCommentId = comment.id;
+      editingOriginalContent = comment.content || '';
+
+      els.replyText.textContent = '正在修改自己的留言';
+      els.replyTarget.classList.add('show');
+
+      els.messageText.value = editingOriginalContent;
+      localStorage.setItem('memorial_draft_content', els.messageText.value);
+
+      els.imageInput.value = '';
+      els.docInput.value = '';
+      updateFileInfo();
+
+      els.submitCommentBtn.textContent = '保存修改';
+      els.messageText.focus();
+
+      const target = document.querySelector('.comments-layout');
+      if (target) {
+        window.scrollTo({
+          top: target.offsetTop - 16,
+          behavior: 'smooth'
+        });
+      }
+    }
+
+    function clearEdit() {
+      editingCommentId = null;
+      editingOriginalContent = '';
+      els.submitCommentBtn.textContent = '提交留言';
+    }
+
+    function setReply(comment) {
+      clearEdit();
+
+      replyParentId = comment.id;
+      replyParentName = comment.visitor_name || '该留言';
+
+      els.replyText.textContent = `正在回复：${replyParentName}`;
+      els.replyTarget.classList.add('show');
+
+      localStorage.setItem('memorial_reply_parent_id', replyParentId);
+      localStorage.setItem('memorial_reply_parent_name', replyParentName);
+
+      els.messageText.focus();
+
+      const target = document.querySelector('.comments-layout');
+      if (target) {
+        window.scrollTo({
+          top: target.offsetTop - 16,
+          behavior: 'smooth'
+        });
+      }
+    }
+
+    function clearReply() {
+      replyParentId = null;
+      replyParentName = '';
+      els.replyText.textContent = '';
+      els.replyTarget.classList.remove('show');
+
+      localStorage.removeItem('memorial_reply_parent_id');
+      localStorage.removeItem('memorial_reply_parent_name');
+    }
+
+    function cancelCurrentAction() {
+      clearReply();
+      clearEdit();
+      els.messageText.value = '';
+      localStorage.removeItem('memorial_draft_content');
+      els.imageInput.value = '';
+      els.docInput.value = '';
+      updateFileInfo();
+    }
+
+    function bindDraftStorage() {
+      els.visitorName.value = localStorage.getItem('memorial_visitor_name') || '';
+      els.visitorRelation.value = localStorage.getItem('memorial_visitor_relation') || '';
+      els.messageText.value = localStorage.getItem('memorial_draft_content') || '';
+
+      replyParentId = localStorage.getItem('memorial_reply_parent_id');
+      replyParentName = localStorage.getItem('memorial_reply_parent_name') || '';
+
+      if (replyParentId && replyParentName) {
+        els.replyText.textContent = `正在回复：${replyParentName}`;
+        els.replyTarget.classList.add('show');
+      }
+
+      els.visitorName.addEventListener('input', () => {
+        localStorage.setItem('memorial_visitor_name', els.visitorName.value.trim());
+      });
+
+      els.visitorRelation.addEventListener('change', () => {
+        localStorage.setItem('memorial_visitor_relation', els.visitorRelation.value);
+      });
+
+      els.messageText.addEventListener('input', () => {
+        localStorage.setItem('memorial_draft_content', els.messageText.value);
+      });
+    }
+
+    function updateAdminUI() {
+      els.adminToggleBtn.textContent = adminMode ? '退出管理员模式' : '管理员模式';
+    }
+
+    function toggleAdminMode() {
+      if (adminMode) {
+        adminToken = '';
+        adminMode = false;
+        sessionStorage.removeItem('memorial_admin_token');
+        updateAdminUI();
+        renderComments();
+        showToast('已退出管理员模式。');
+        return;
+      }
+
+      const token = window.prompt('请输入管理员删除口令');
+      if (!token) return;
+
+      adminToken = token.trim();
+      adminMode = Boolean(adminToken);
+
+      sessionStorage.setItem('memorial_admin_token', adminToken);
+
+      updateAdminUI();
+      renderComments();
+      showToast('管理员模式已开启。');
+    }
+
+    async function updateOwnComment() {
+      if (!requireBackend()) return;
+
+      const newContent = els.messageText.value.trim();
+
+      if (!newContent) {
+        showToast('请输入修改后的留言内容。', 'error');
+        els.messageText.focus();
+        return;
+      }
+
+      if (hasBlockedContent(newContent)) {
+        showToast('修改内容包含不适宜展示的信息，无法保存。', 'error');
+        return;
+      }
+
+      const { images, docs } = selectedFiles();
+      if (images.length || docs.length) {
+        showToast('修改留言暂不支持新增附件。如需更换附件，请删除后重新发布。', 'error');
+        return;
+      }
+
+      const reset = setLoading(els.submitCommentBtn, '正在保存…');
+
+      try {
+        const { error } = await client.rpc('update_own_memorial_comment', {
+          target_comment_id: editingCommentId,
+          own_visitor_key: getVisitorKey(),
+          new_content: newContent
+        });
+
+        if (error) throw error;
+
+        showToast('留言已修改。');
+
+        els.messageText.value = '';
+        localStorage.removeItem('memorial_draft_content');
+
+        clearEdit();
+        clearReply();
+
+        await loadComments();
+      } catch (error) {
+        console.error(error);
+
+        const msg = error.message || '';
+
+        if (msg.includes('not owner')) {
+          showToast('修改失败：这条留言不是在当前设备上发布的。', 'error');
+        } else if (msg.includes('blocked content')) {
+          showToast('修改失败：内容包含不适宜展示的信息。', 'error');
+        } else if (msg.includes('Could not find the function') || msg.includes('update_own_memorial_comment')) {
+          showToast('修改失败：请先在 Supabase 中创建本人修改函数。', 'error');
+        } else {
+          showToast('修改失败，请稍后再试。', 'error');
+        }
+      } finally {
+        reset();
+        els.submitCommentBtn.textContent = editingCommentId ? '保存修改' : '提交留言';
+      }
+    }
+
+    async function deleteOwnComment(comment) {
+      if (!requireBackend()) return;
+
+      const ok = window.confirm('确认删除这条留言吗？如果这条留言下面有回复，也会一并删除。此操作不可撤销。');
+      if (!ok) return;
+
+      try {
+        const { error } = await client.rpc('delete_own_memorial_comment', {
+          target_comment_id: comment.id,
+          own_visitor_key: getVisitorKey()
+        });
+
+        if (error) throw error;
+
+        showToast('你的留言已删除。');
+        await loadComments();
+      } catch (error) {
+        console.error(error);
+
+        const msg = error.message || '';
+
+        if (msg.includes('not owner')) {
+          showToast('删除失败：这条留言不是在当前设备上发布的。', 'error');
+        } else if (msg.includes('Could not find the function') || msg.includes('delete_own_memorial_comment')) {
+          showToast('删除失败：请先在 Supabase 中创建本人删除函数。', 'error');
+        } else {
+          showToast('删除失败，请稍后再试。', 'error');
+        }
+      }
+    }
+
+    async function deleteComment(comment) {
+      if (!requireBackend()) return;
+
+      if (!adminToken) {
+        showToast('请先开启管理员模式。', 'error');
+        return;
+      }
+
+      const ok = window.confirm('确认删除这条留言及其下方回复吗？此操作不可撤销。');
+      if (!ok) return;
+
+      try {
+        const { error } = await client.rpc('delete_memorial_comment', {
+          target_comment_id: comment.id,
+          admin_token: adminToken
+        });
+
+        if (error) throw error;
+
+        showToast('留言已删除。');
+        await loadComments();
+      } catch (error) {
+        console.error(error);
+
+        const msg = error.message || '';
+
+        if (msg.includes('invalid admin token') || msg.includes('管理员口令错误')) {
+          showToast('管理员口令错误，无法删除。', 'error');
+        } else if (msg.includes('Could not find the function') || msg.includes('delete_memorial_comment')) {
+          showToast('删除失败：请先在 Supabase 中创建管理员删除函数。', 'error');
+        } else {
+          showToast('删除失败，请检查管理员权限设置。', 'error');
+        }
+      }
+    }
+
+    function subscribeRealtime() {
+      if (!isConfigured) return;
+
+      client
+        .channel('memorial-comments-realtime')
+        .on('postgres_changes', {
+          event: '*',
+          schema: 'public',
+          table: COMMENTS_TABLE
+        }, () => loadComments())
+        .subscribe(status => {
+          if (status === 'CHANNEL_ERROR') {
+            showToast('实时更新连接失败，但不影响提交保存。', 'error');
           }
         });
-      }, { rootMargin: '-35% 0px -55% 0px', threshold: 0.01 });
-      sections.forEach(section => observer.observe(section));
     }
 
-    function initReveal() {
-      const items = document.querySelectorAll('.fade-up');
-      const observer = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) entry.target.classList.add('show');
-        });
-      }, { threshold: 0.1 });
-      items.forEach(item => observer.observe(item));
-    }
+    function bindEvents() {
+      els.imageInput.addEventListener('change', updateFileInfo);
+      els.docInput.addEventListener('change', updateFileInfo);
+      els.submitCommentBtn.addEventListener('click', submitComment);
+      els.cancelReplyBtn.addEventListener('click', cancelCurrentAction);
+      els.adminToggleBtn.addEventListener('click', toggleAdminMode);
+      els.previewClose.addEventListener('click', closePreview);
 
-    function applyConfig() {
-      document.title = `${CONFIG.person.name} | 线上纪念馆`;
-      document.body.style.backgroundImage = `linear-gradient(120deg, rgba(8, 47, 73, 0.68), rgba(15, 23, 42, 0.56)), url('${CONFIG.person.background}')`;
-
-      $('heroTitle').textContent = CONFIG.person.title;
-      $('personName').textContent = CONFIG.person.name;
-      $('englishName').textContent = CONFIG.person.englishName;
-      $('dates').textContent = CONFIG.person.dates;
-      $('heroQuote').textContent = CONFIG.heroQuote;
-      $('mainPhoto').src = CONFIG.person.photo;
-      $('lifePhoto').src = CONFIG.person.photo;
-      $('lifeName').textContent = CONFIG.person.name;
-      $('lifeIdentity').textContent = CONFIG.person.identity.join(' · ');
-      $('memorialText').textContent = CONFIG.memorialText;
-      $('bioText').textContent = CONFIG.bio;
-      $('cardName').textContent = CONFIG.person.name;
-      $('cardDate').textContent = CONFIG.person.dates;
-
-      renderIdentity();
-      renderTimeline();
-      renderGallery();
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      applyConfig();
-      initMusic();
-      initNavSpy();
-      initReveal();
-      generateQR();
-      updateCounts();
-      renderMessages();
-
-      $('flowerBtn').addEventListener('click', () => {
-        setNumber(STORAGE.flowers, getNumber(STORAGE.flowers) + 1);
-        updateCounts();
-        createPetalBurst();
-        showToast('已献上一束花，寄托追思');
+      els.previewModal.addEventListener('click', event => {
+        if (event.target === els.previewModal) closePreview();
       });
 
-      $('candleBtn').addEventListener('click', () => {
-        setNumber(STORAGE.candles, getNumber(STORAGE.candles) + 1);
-        updateCounts();
-        showToast('已点燃一支烛，愿其安息');
-      });
-
-      $('messageForm').addEventListener('submit', (event) => {
-        event.preventDefault();
-        const name = $('visitorName').value.trim();
-        const text = $('visitorMessage').value.trim();
-        if (!name || !text) {
-          showToast('请填写姓名和留言内容');
-          return;
-        }
-        const messages = getMessages();
-        messages.push({ name, text, time: formatTime() });
-        saveMessages(messages);
-        $('visitorMessage').value = '';
-        renderMessages();
-        showToast('留言已保存到当前浏览器');
-      });
-
-      $('clearMessagesBtn').addEventListener('click', () => {
-        if (confirm('确定清空当前浏览器中保存的留言吗？')) {
-          localStorage.removeItem(STORAGE.messages);
-          renderMessages();
-          showToast('本机留言已清空');
+      document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && els.previewModal.classList.contains('show')) {
+          closePreview();
         }
       });
+    }
 
-      $('exportMessagesBtn').addEventListener('click', exportMessages);
-      $('downloadQrBtn').addEventListener('click', () => downloadCanvas($('qrCanvas'), 'memorial-qrcode.png'));
-      $('downloadCardBtn').addEventListener('click', downloadCard);
-      $('shareBtn').addEventListener('click', sharePage);
-      $('closeModalBtn').addEventListener('click', closeImageModal);
-      $('imageModal').addEventListener('click', (event) => { if (event.target === $('imageModal')) closeImageModal(); });
-      document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeImageModal(); });
-    });
+    async function init() {
+      if (!isConfigured) els.setupWarning.classList.add('show');
+
+      getVisitorKey();
+      bindDraftStorage();
+      initVideo();
+      bindEvents();
+      updateAdminUI();
+      updateFileInfo();
+
+      await loadComments();
+      subscribeRealtime();
+    }
+
+    init();
   </script>
 </body>
 </html>
